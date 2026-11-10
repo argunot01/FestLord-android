@@ -1,23 +1,22 @@
 # Batyr's Way — Путь батыра
 
-Android fitness RPG prototype. Original steppe-inspired theme: mountains, wolf, yurt, gold-and-charcoal palette, and a low-poly 3D hero who begins very thin and gains bulk and armor with levels.
+Android fitness RPG with a steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## Working features (v0.4)
-- Create your own exercises and choose repetitions or seconds, number of sets, and optional equipment weight.
-- Start a focused workout step, count repetitions, confirm completion and mark sets.
-- Local exercise plan persistence through SharedPreferences (no account required).
-- XP for each set once per day (daily XP cap) and bonus for a finished workout, with levels and five stages.
-- Music from the phone and direct HTTPS audio streams.
-- Manually save body weight and target weight.
+## v0.5
+- Redesigned game-style UI: five progression chapters, atmospheric mountains, yurt, wolf, black-and-gold interface.
+- Five embedded character art assets, available offline within the Android APK.
+- Home screen with character art, rank, XP bar, and game attributes.
+- Custom workout editor: user-created exercise name, repetitions or seconds, sets, equipment weight.
+- Mark individual sets, count repetitions in focus mode, earn XP once per set, and finish a daily workout for a bonus.
+- Reward screen and optional local audio file playback, plus direct HTTPS music streams.
+- Keeps data on-device in WebView localStorage; first launch imports previous v0.4 SharedPreferences exercises, XP and goals.
 
-## To develop next
-- High-detail original 3D hero artwork (the current OpenGL model is basic geometry).
-- Richer animations and editable daily plans.
-- Workout history charts and a more complete music library.
-- Stable signing and Play Protect classification review.
+## Current limitations
+The character views are 2D illustrations, **not** rigged animated 3D models. XP/attributes are gamification feedback, not measurements of physical strength. The artwork is embedded in the APK, so the main interface works without internet, although music streaming requires access.
 
 ## Safety
-Earlier test APKs were explicitly blocked by Google Play Protect. A new build alone does **not** establish safety or remove the warning. Do not bypass Google Play Protect to install flagged binaries. The source is available for inspection and builds run in GitHub Actions.
+Earlier debug APK files were blocked by Google Play Protect on the user's device. A successful GitHub Actions build or this UI redesign does not prove the APK is safe to install. Do not disable or bypass Play Protect to install a blocked APK. Investigate the security warning, use a standard signed release, and validate on trusted devices or Play testing channels.
 
-## Internal naming
-The repository remains `FestLord-android` and the Android package id remains `kz.festlord.app` for continuity, while display name is **Batyr's Way**.
+The repository remains `FestLord-android`; Android package ID remains `kz.festlord.app` for update continuity, while app display name is Batyr's Way.
+
+See [DESIGN.md](DESIGN.md).
