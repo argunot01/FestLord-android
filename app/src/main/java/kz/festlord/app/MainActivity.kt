@@ -47,7 +47,7 @@ class MainActivity : Activity() {
   currentTab=tab
   root=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setBackgroundColor(bg)}
   setContentView(root)
-  root.addView(txt("⚔  FEST LORD",25f,gold))
+  root.addView(txt("⚔  BATYR'S WAY",25f,gold))
   val scroll=ScrollView(this)
   content=LinearLayout(this).apply { orientation=LinearLayout.VERTICAL;setPadding(9,3,9,3) }
   scroll.addView(content)
@@ -134,7 +134,7 @@ class MainActivity : Activity() {
  }
  private fun music() {
   addCard {
-   addView(txt("🎵 Fest Lord Music",22f,gold))
+   addView(txt("🎵 Batyr's Way Music",22f,gold))
    addView(txt("Выбирай музыку с телефона или введи прямую HTTPS-ссылку на аудиопоток."))
    addView(button("Выбрать музыку с телефона"){
     val intent=Intent(Intent.ACTION_OPEN_DOCUMENT).apply { type="audio/*";addCategory(Intent.CATEGORY_OPENABLE)}
