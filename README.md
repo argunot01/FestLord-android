@@ -1,11 +1,23 @@
 # Batyr's Way — Путь батыра
 
-Personal Android workout RPG prototype (formerly Fest Lord). Track workout tasks and XP, and develop a hero from a weak beginner into a legendary steppe warrior.
+Android fitness RPG prototype. Original steppe-inspired theme: mountains, wolf, yurt, gold-and-charcoal palette, and a low-poly 3D hero who begins very thin and gains bulk and armor with levels.
 
-Visual direction: Turkic steppe, yurt, wolf, mountains, black-and-gold interface. See DESIGN.md.
+## Working features (v0.4)
+- Create your own exercises and choose repetitions or seconds, number of sets, and optional equipment weight.
+- Start a focused workout step, count repetitions, confirm completion and mark sets.
+- Local exercise plan persistence through SharedPreferences (no account required).
+- XP for each set once per day (daily XP cap) and bonus for a finished workout, with levels and five stages.
+- Music from the phone and direct HTTPS audio streams.
+- Manually save body weight and target weight.
 
-Technical note: repository stays `FestLord-android` and Android applicationId stays `kz.festlord.app` for continuity. Android display name is `Batyr's Way`.
+## To develop next
+- High-detail original 3D hero artwork (the current OpenGL model is basic geometry).
+- Richer animations and editable daily plans.
+- Workout history charts and a more complete music library.
+- Stable signing and Play Protect classification review.
 
-Security: previous APK builds were blocked by Google Play Protect on a user's phone; this name change is not a security fix. Do not bypass Play Protect to install blocked builds.
+## Safety
+Earlier test APKs were explicitly blocked by Google Play Protect. A new build alone does **not** establish safety or remove the warning. Do not bypass Google Play Protect to install flagged binaries. The source is available for inspection and builds run in GitHub Actions.
 
-Current prototype does not yet include the approved high-quality character visuals or custom workout editor.
+## Internal naming
+The repository remains `FestLord-android` and the Android package id remains `kz.festlord.app` for continuity, while display name is **Batyr's Way**.
