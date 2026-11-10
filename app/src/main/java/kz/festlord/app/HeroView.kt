@@ -17,6 +17,7 @@ class HeroView(context: Context): GLSurfaceView(context) {
   renderMode=RENDERMODE_CONTINUOUSLY
  }
  fun changeStyle(i:Int){ queueEvent {renderer3d.style=i} }
+ fun changeStage(value:Int){ queueEvent {renderer3d.stage=value} }
  override fun onTouchEvent(event:MotionEvent):Boolean {
   when(event.actionMasked){
    MotionEvent.ACTION_DOWN -> previousX=event.x
@@ -33,6 +34,7 @@ class HeroView(context: Context): GLSurfaceView(context) {
 private class HeroRenderer: GLSurfaceView.Renderer {
  var angle=0f
  var style=1
+ var stage=1
  private val projection=FloatArray(16)
  private val camera=FloatArray(16)
  private val pv=FloatArray(16)
@@ -84,22 +86,34 @@ private class HeroRenderer: GLSurfaceView.Renderer {
   GLES20.glVertexAttribPointer(positionLocation,3,GLES20.GL_FLOAT,false,12,vertexBuffer)
   Matrix.setLookAtM(camera,0,0f,.7f,8f,0f,.4f,0f,0f,1f,0f)
   Matrix.multiplyMM(pv,0,projection,0,camera,0)
-  val armor=when(style){
-   0->floatArrayOf(.15f,.44f,.58f,1f)
-   2->floatArrayOf(.53f,.26f,.75f,1f)
-   else->floatArrayOf(.22f,.25f,.34f,1f)
+  val armor=when {
+   stage==1 -> floatArrayOf(.39f,.36f,.3f,1f)
+   stage==2 -> floatArrayOf(.28f,.37f,.4f,1f)
+   style==0 -> floatArrayOf(.18f,.45f,.58f,1f)
+   style==2 -> floatArrayOf(.53f,.26f,.75f,1f)
+   else -> floatArrayOf(.22f,.25f,.34f,1f)
   }
-  val skin=floatArrayOf(.76f,.52f,.38f,1f)
+  val skin=floatArrayOf(.72f,.51f,.37f,1f)
   val gold=floatArrayOf(.88f,.70f,.30f,1f)
-  cube(0f,.6f,0f,.6f,.8f,.35f,armor)
-  cube(0f,1.35f,0f,.27f,.3f,.27f,skin)
-  cube(-.48f,.6f,0f,.19f,.68f,.23f,armor)
-  cube(.48f,.6f,0f,.19f,.68f,.23f,armor)
-  cube(-.2f,-.4f,0f,.22f,.95f,.24f,armor)
-  cube(.2f,-.4f,0f,.22f,.95f,.24f,armor)
-  if(style!=0){
-   cube(0f,1.65f,0f,.4f,.14f,.35f,gold)
-   cube(0f,.7f,.22f,.35f,.10f,.07f,gold)
+  // The level-one hero is deliberately very skinny. Armor unlocks later.
+  val bulk=when(stage){1->.26f;2->.37f;3->.53f;4->.65f;else->.74f}
+  cube(0f,.53f,0f,bulk,.84f,.28f+bulk*.16f,armor)
+  cube(0f,1.36f,0f,.22f+bulk*.07f,.30f,.22f+bulk*.07f,skin)
+  cube(-bulk-.15f,.53f,0f,.12f+bulk*.14f,.68f,.16f+bulk*.1f,armor)
+  cube(bulk+.15f,.53f,0f,.12f+bulk*.14f,.68f,.16f+bulk*.1f,armor)
+  cube(-.15f,-.42f,0f,.12f+bulk*.13f,.93f,.18f+bulk*.09f,armor)
+  cube(.15f,-.42f,0f,.12f+bulk*.13f,.93f,.18f+bulk*.09f,armor)
+  if(stage>=3){
+   cube(0f,1.68f,0f,.35f+bulk*.15f,.14f,.32f,gold)
+   cube(0f,.67f,.25f,.33f,.10f,.07f,gold)
+  }
+  if(stage>=4){
+   cube(0f,.19f,.23f,.36f,.09f,.08f,gold)
+   cube(-bulk-.23f,.92f,0f,.26f,.2f,.4f,gold)
+   cube(bulk+.23f,.92f,0f,.26f,.2f,.4f,gold)
+  }
+  if(stage>=5){
+   cube(0f,1.87f,0f,.11f,.23f,.11f,gold)
   }
  }
  private fun cube(x:Float,y:Float,z:Float,sx:Float,sy:Float,sz:Float,color:FloatArray){
