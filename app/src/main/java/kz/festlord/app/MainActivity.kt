@@ -274,6 +274,10 @@ class MainActivity : Activity() {
                     }
                     addView(box)
                 }
+                addView(action("▶ Начать упражнение") {
+                    val first = (1..exercise.sets).firstOrNull { !prefs.getBoolean(setKey(exercise, it), false) } ?: 1
+                    showSession(exercise, first)
+                })
                 addView(action("Изменить упражнение") { editExercise(exercise) })
             }
         }
@@ -281,6 +285,63 @@ class MainActivity : Activity() {
             addView(action("🏆 Завершить тренировку") { finishWorkout() })
             addView(text("XP начисляется только один раз за подход. Лимит за подходы — 120 XP в день.", 12f, faint))
         }
+    }
+
+    private fun showSession(exercise: Exercise, setNumber: Int) {
+        root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(bg)
+            setPadding(dp(16), dp(22), dp(16), dp(22))
+        }
+        setContentView(root)
+        root.addView(action("‹ Вернуться к упражнениям") { render("Тренировка") })
+        val gap = Space(this)
+        root.addView(gap, LinearLayout.LayoutParams(-1, 0, 1f))
+        val header = text("ИСПЫТАНИЕ БАТЫРА", 17f, gold, true).apply { gravity = Gravity.CENTER }
+        root.addView(header)
+        val name = text(exercise.name, 28f, Color.WHITE, true).apply { gravity = Gravity.CENTER }
+        root.addView(name)
+        root.addView(text("Подход $setNumber из ${exercise.sets}", 16f, faint).apply { gravity = Gravity.CENTER })
+        val units = if (exercise.type == "Секунды") "секунд" else "повторений"
+        val counterLabel = text("0 / ${exercise.amount}", 40f, gold, true).apply { gravity = Gravity.CENTER }
+        root.addView(counterLabel)
+        root.addView(text("Цель: ${exercise.amount} $units", 16f, faint).apply { gravity = Gravity.CENTER })
+        var count = 0
+        val progress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = exercise.amount
+            progress = 0
+            progressTintList = ColorStateList.valueOf(gold)
+        }
+        root.addView(progress, LinearLayout.LayoutParams(-1, dp(12)))
+        val complete = action("✓ Отметить подход выполненным") {
+            mark(exercise, setNumber, true)
+            render("Тренировка")
+        }
+        complete.isEnabled = false
+        complete.alpha = .45f
+        root.addView(action(if (exercise.type == "Секунды") "+1 секунда" else "+1 повторение") {
+            count = (count + 1).coerceAtMost(exercise.amount)
+            counterLabel.text = "$count / ${exercise.amount}"
+            progress.progress = count
+            if (count >= exercise.amount) {
+                complete.isEnabled = true
+                complete.alpha = 1f
+            }
+        })
+        root.addView(action("Я сделал все ${exercise.amount} $units") {
+            count = exercise.amount
+            counterLabel.text = "$count / ${exercise.amount}"
+            progress.progress = count
+            complete.isEnabled = true
+            complete.alpha = 1f
+        })
+        root.addView(complete)
+        root.addView(text("Подтверждай только реально выполненное упражнение. Можно остановиться раньше — безопасная нагрузка важнее XP.", 12f, faint))
+        root.addView(Space(this), LinearLayout.LayoutParams(-1, 0, 1f))
+        root.addView(action("♫ Пауза / музыка") {
+            try { player?.let { if (it.isPlaying) it.pause() else it.start() } }
+            catch (_: Exception) {}
+        })
     }
 
     private fun chooseExercise() {
