@@ -1,8 +1,8 @@
 # Batyr's Way — Путь батыра
 
-Android fitness RPG with a steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
+Android fitness RPG with a Kazakh Batyr launcher icon and steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## v1.3
+## v1.4
 - Interactive, image-rich game UI matching the approved mobile layout: bright Kazakh-steppe photographs, yurt, mountains, five character chapters, gold-framed navigation, workout cards, focused exercise, and reward screen.
 - Five separate full-scene progression illustrations cropped from the approved art. The Legend portrait visibly includes its gray wolf. New vivid scene art is in `app/src/main/assets/scenes/`.
 - Restyled interactive hero overview, step-aware workout list and progress, single-exercise session display, and XP reward page. Music library and level qualifications remain in place.
@@ -51,3 +51,7 @@ See [DESIGN.md](DESIGN.md).
 | 5 — Легенда | 63,600 | 265 | ~589 total | ~1,248 total | 265 total |
 
 Workout totals are cumulative and illustrative, not promises. Actual outcome also depends on the personalised load gate; high-volume sessions must be physically appropriate, and adequate rest is recommended. No body movement is independently verified by the app.
+
+### v1.4 Android launcher icon
+
+The old crown launcher resource is no longer referenced by the manifest. The new launcher icon shows a close-up Kazakh Batyr in gold-toned armor and helmet against a mountainous steppe background. Adaptive icon and circular icon are provided for Android 8+; density-specific WebP fallback icons are included for launchers. The Android package name stays the same so an installed version can be updated.
