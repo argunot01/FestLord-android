@@ -72,4 +72,9 @@ const beforePlank=state.xp;
 ctx.finish();
 assert.equal(state.xp,beforePlank,'a 10-minute single plank must not count as cardio');
 
+const savedXp=state.xp;
+state.xp=1000000;
+assert.ok(ctx.level()<11, 'XP alone cannot advance into Fighter without sessions and improved workload');
+state.xp=savedXp;
+
 console.log('PASS: 1-rep anti-farming, daily cap, baseline, individual workload progress, accessible cardio');
