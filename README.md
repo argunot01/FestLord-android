@@ -2,7 +2,7 @@
 
 Android fitness RPG with a steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## v1.2
+## v1.3
 - Interactive, image-rich game UI matching the approved mobile layout: bright Kazakh-steppe photographs, yurt, mountains, five character chapters, gold-framed navigation, workout cards, focused exercise, and reward screen.
 - Five separate full-scene progression illustrations cropped from the approved art. The Legend portrait visibly includes its gray wolf. New vivid scene art is in `app/src/main/assets/scenes/`.
 - Restyled interactive hero overview, step-aware workout list and progress, single-exercise session display, and XP reward page. Music library and level qualifications remain in place.
@@ -10,16 +10,16 @@ Android fitness RPG with a steppe-inspired design: a lean beginner grows into a 
 - Home screen with character art, selectable progression chapters, rank, XP bar, and game attributes.
 - **Skill-specific progression:** strength, endurance, resilience and energy now use logged exercise categories and completed sets, rather than increasing uniformly from XP. Strength from resistance/body-weight exercises; endurance from cardio; resilience from static holds plus small regularity bonus; energy is a small gamified consistency/balance attribute, not a biological measure.
 - Automatic exercise classification with explicit override in exercise editor (strength / cardio / stability / mixed); records are snapshotted at workout completion and the reward screen shows real earned skill points. Archived pre-v1.1 workouts without category data are retained but not guessed or retroactively assigned to a category.
-- A 14-day category balance display encourages variety without requiring unsafe volume or punishing rest days.
-- Five approved chapters: Новичок (1–10), Боец (11–25), Воин (26–50), Батыр (51–75), Легенда (76–100). Athlete and anime character selection is removed; five fully original, cohesive Turkic-hero artworks are still planned.
+- The exercise-category dashboard tracks strength, cardio endurance, stability and mixed sessions separately; rank progression and athletic attributes remain distinct.
+- Five real long-term ranks (not 100 micro-levels): 1 Новичок → 2 Боец → 3 Воин → 4 Батыр → 5 Легенда. Later preview remains illustrative; no unlocking via preview.
 - Illustrated, lightweight loop animations for pushups, squats, pullups, walks and other exercises (schematics only).
 - Seven-day visual activity log and daily workout summary.
-- Clear next-level qualification card with real thresholds and missing XP, qualifying workout count, and minimum workload verified twice in the latest six sessions.
-- Display approximate **workouts remaining**, simulated from the exact gate thresholds with the assumption that the next sessions reach the current personalized workload goal. Estimates are not mandatory schedules; rest is never penalized.
-- Explain XP: full qualified workout +24 XP, plus +1 XP for each 10 workload points (maximum +14 load bonus, maximum 38 XP/day). Workout planner previews XP based on the full planned sets; reward screen shows actual split.
-- Level-specific passing score: XP threshold, number of **meaningful sessions**, and repeated personal workload target.
-- Progressive level checks are tied to a 3-session baseline (repeatable strength/endurance effort), with a gentle 0.6% relative workload increase per level plus minimum load by rank (12/20/30/45/60); no level unlock from one push-up per day.
-- Meaningful workout: at least two sets and 12 game workload points, OR two or more sets totaling 90 seconds of static holds, OR at least 10 minutes of cardio (including walking). Static minutes use a different workload conversion so manageable beginner holds can contribute fairly to resilience. One qualifying training session can grant XP and game attributes each day.
+- Next-level card shows long-term XP thresholds and real workout forecasts based on the user's plan and workout history, rather than 44% progress after one beginner workout.
+- Forecast **qualifying workouts remaining** based on the three stage gates and estimated effort from the planned workout or recorded history. These are NOT consecutive-day instructions; rest and recovery are essential.
+- Explain XP: each meaningful completed session gets +30 base XP, +floor(0.7 × workload points) and +5 XP per additional distinct exercise (up to +20 variety XP); max 240 XP/day, no weight-kg multiplier. XP comes from completed workouts, not unchecked plans.
+- Stage thresholds in cumulative XP: 1→2 2,400; 2→3 9,600; 3→4 27,600; 4→5 63,600. This corresponds to about 23, 67, 167 and 333 normal 108-XP sessions respectively (rounding may vary), plus qualifying workout-count and load gates.
+- Cumulative minimum qualifying sessions for ranks 2–5: 10, 40, 115 and 265. Workout-load gate requires two qualifying sessions among the latest six, based on the user's first three sessions and an incremental rank target. No fixed calendar days; the training count assumes sensible rest.
+- Meaningful workout: at least two sets and 12 game workload points, or 10 minutes of cardio (including walking), or two static sets totaling 90 seconds. Up to one XP-granting workout per day. Weights are not used to boost XP for safety.
 - New deterministic Node regression tests in `tests/progression.test.js`.
 - Unverified pre-v0.7 XP remains stored, but old checkboxes are not automatically treated as qualifying workout history.
 - Custom workout editor: user-created exercise name, repetitions or seconds, sets, equipment weight.
@@ -40,3 +40,14 @@ Earlier debug APK files were blocked by Google Play Protect on the user's device
 The repository remains `FestLord-android`; Android package ID remains `kz.festlord.app` for update continuity, while app display name is Batyr's Way.
 
 See [DESIGN.md](DESIGN.md).
+
+### Long-term progression tuning (v1.3)
+
+| Rank unlocked | Total XP | Minimum distinct qualifying sessions | Moderate (~108 XP/session) | Light (~51 XP/session) | High-volume (240 XP/session) |
+|---|---:|---:|---:|---:|---:|
+| 2 — Боец | 2,400 | 10 | ~23 total | ~48 total | 10 total |
+| 3 — Воин | 9,600 | 40 | ~89 total | ~189 total | 40 total |
+| 4 — Батыр | 27,600 | 115 | ~256 total | ~542 total | 115 total |
+| 5 — Легенда | 63,600 | 265 | ~589 total | ~1,248 total | 265 total |
+
+Workout totals are cumulative and illustrative, not promises. Actual outcome also depends on the personalised load gate; high-volume sessions must be physically appropriate, and adequate rest is recommended. No body movement is independently verified by the app.
