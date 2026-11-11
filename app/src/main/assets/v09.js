@@ -2,28 +2,28 @@
 (function () {
   'use strict';
   const chapters = [
-    {name:'Новичок',range:'1–10',file:'novice'},
-    {name:'Боец',range:'11–25',file:'fighter'},
-    {name:'Воин',range:'26–50',file:'warrior'},
-    {name:'Батыр',range:'51–75',file:'batyr'},
-    {name:'Легенда',range:'76–100',file:'legend'}
+    {name:'Новичок',range:'1',file:'novice'},
+    {name:'Боец',range:'2',file:'fighter'},
+    {name:'Воин',range:'3',file:'warrior'},
+    {name:'Батыр',range:'4',file:'batyr'},
+    {name:'Легенда',range:'5',file:'legend'}
   ];
   const icon = { push:'✊',squat:'♜',pull:'⚔',plank:'◈',run:'♞',other:'✦' };
   const stageArt = n => (window.BATYR_STAGE_SCENES && window.BATYR_STAGE_SCENES[n-1]) || ('scenes/'+chapters[n-1].file+'.webp');
   const floor = x => Math.max(0,Math.min(100,x));
-  const stageLevel = n=> n===1?1:n===2?11:n===3?26:n===4?51:76;
+  const stageLevel = n => n;
   // Game attributes represent the development of the same hero, NOT medical
   // measurement. Later stages have higher baseline values.
   const statSteps=[
     {lvl:1,s:[1,1,1,1]},
-    {lvl:11,s:[3,3,2,2]},
-    {lvl:26,s:[5,4,4,3]},
-    {lvl:51,s:[7,6,6,5]},
-    {lvl:76,s:[10,9,8,7]},
-    {lvl:100,s:[12,11,10,9]}
+    {lvl:2,s:[3,3,2,2]},
+    {lvl:3,s:[5,4,4,3]},
+    {lvl:4,s:[7,6,6,5]},
+    {lvl:5,s:[10,9,8,7]},
+    {lvl:6,s:[10,9,8,7]}
   ];
   const strengthAt=lvl=>{
-    const l=Math.max(1,Math.min(100,Number(lvl)||1));
+    const l=Math.max(1,Math.min(5,Number(lvl)||1));
     let i=0;while(i<statSteps.length-2 && statSteps[i+1].lvl<=l)i++;
     const a=statSteps[i],b=statSteps[i+1],t=Math.min(1,(l-a.lvl)/(b.lvl-a.lvl));
     return a.s.map((v,k)=>Math.max(v,Math.floor(v+(b.s[k]-v)*t+0.0001)));
@@ -31,8 +31,8 @@
   window.BATYR_STAGE_STATS=strengthAt;
   const statMarkup=s=>stat('💪','Сила',s[0])+stat('♥','Выносливость',s[1])+stat('🛡','Стойкость',s[2])+stat('ϟ','Энергия',s[3]);
 
-  const gameXP = n => {const s=n-1;return Math.ceil(65*s+0.5*s*s)};
-  const nextXp = () => level()>=100? gameXP(100):gameXP(level()+1);
+  const gameXP = n => window.BATYR_LEVEL_ENGINE.levelXP(n);
+  const nextXp = () => level()>=5? gameXP(5):gameXP(level()+1);
   function pct(){const cur=gameXP(level()),next=nextXp();return floor((state.xp-cur)/Math.max(1,next-cur)*100);}
   const bar = percent=>'<div class="v9-meter"><div style="width:'+floor(percent)+'%"></div></div>';
   const stat=(mark,name,value)=>'<div class="v9-stat"><span class="v9-stat-icon">'+mark+'</span><span>'+name+'</span><b>'+value+'</b></div>';
@@ -41,7 +41,7 @@
   function navTiles(){return '<div class="v9-action-grid">'+buttons.map(([action,emoji,label],i)=>'<button class="v9-action '+(i===0?'chosen':'')+'" data-action="'+action+'"><span>'+emoji+'</span><small>'+label+'</small></button>').join('')+'</div>';}
   function chaptersPanel(){
     const current=stage(),chosen=state.previewStage||current;
-    return '<div class="v9-chapters-heading"><span>ПУТЬ БАТЫРА</span><span>УРОВЕНЬ '+level()+' / 100</span></div>'+ 
+    return '<div class="v9-chapters-heading"><span>ПУТЬ БАТЫРА</span><span>УРОВЕНЬ '+level()+' / 5</span></div>'+ 
       '<div class="v9-chapters">'+chapters.map((x,i)=>{
         const n=i+1;
         return '<button data-action="preview:'+n+'" class="v9-chapter '+(chosen===n?'current ':'')+(n>current?'future':'unlocked')+'"><span class="v9-stage-index">'+(n>current?'◆':n)+'</span><b>'+x.name+'</b></button>';
@@ -61,7 +61,7 @@
         '<div class="v9-stage-back" style="background-image:url(\''+stageImg+'\')"></div>'+ 
         '<img class="v9-stage-art" src="'+stageImg+'" alt="'+esc(chapter.name)+' — казахский степной герой" loading="eager">'+
         '<div class="v9-stage-topline"><span class="v9-stage-ribbon">ЭТАП '+shown+' · '+chapter.name+'</span></div>'+ 
-        '<div class="v9-hero-level"><b>'+(future?'ЭТАП '+shown:'УР. '+lvl)+'</b><span>'+(future?'Уровни '+chapter.range:'XP '+state.xp+' / '+nextXp())+'</span>'+bar(future?0:pct())+
+        '<div class="v9-hero-level"><b>'+(future?'ЭТАП '+shown:'УР. '+lvl)+'</b><span>'+(future?'Уровень '+chapter.range:'XP '+state.xp+' / '+nextXp())+'</span>'+bar(future?0:pct())+
           (future?'<small class="v10-current-lvl">Твой уровень: '+lvl+'</small>':'')+'</div>'+
         '<div class="v9-hero-stats"><div class="v10-stat-caption">'+(preview?'ПРИМЕР ПОКАЗАТЕЛЕЙ ЭТАПА '+shown:'ТВОИ ИГРОВЫЕ ПОКАЗАТЕЛИ')+'</div>'+statMarkup(shownStats)+'</div>'+ 
         '<div class="v9-landscape-label"><b>'+chapter.name+'</b><span>'+stepNotice+'</span></div>'+ 
@@ -69,7 +69,7 @@
       '</section>'+ 
       '<section class="v9-quest-strip"><span class="v9-quest-mark">⚔</span><div><b>Сегодняшнее испытание</b><small>'+setsDone()+' из '+setsTotal()+' подходов выполнено</small></div><button data-action="go-workout">Начать</button></section>'+ 
       '<section class="v9-panel v9-next-rank"><div class="v9-panel-heading">✦ Путь к следующему уровню</div>'+ 
-        '<div class="v9-space-between"><span>Уровень '+lvl+'</span><strong>'+state.xp+' XP</strong><span>Уровень '+Math.min(100,lvl+1)+'</span></div>'+bar(pct())+ 
+        '<div class="v9-space-between"><span>Уровень '+lvl+'</span><strong>'+state.xp+' XP</strong><span>Уровень '+Math.min(5,lvl+1)+'</span></div>'+bar(pct())+ 
         '<p>Для развития нужны XP, регулярные полноценные тренировки и твоя индивидуальная нагрузка.</p></section>'+ 
       '<section class="v9-panel v9-stage-gallery"><div class="v9-panel-heading">5 ступеней батыра</div>'+ 
         '<div class="v9-portrait-gallery">'+chapters.map((x,i)=>'<button data-action="preview:'+(i+1)+'" class="'+((i+1)===shown?'selected':'')+'"><img src="'+stageArt(i+1)+'" alt=""><b>'+x.name+'</b><small>Этап '+(i+1)+'</small><small>Ур. '+x.range+'</small></button>').join('')+'</div></section>';
@@ -145,7 +145,7 @@
        '<div class="v9-panel"><h3>Прокачка за эту тренировку</h3>'+gainRows+
        '<h3>Текущие показатели героя</h3>'+statMarkup(totals)+
        '<p class="v10-attrs-note">Разные упражнения прокачивают разные навыки. Это игровые баллы, а не медицинский показатель физической формы.</p></div>'+ 
-       '<div class="v9-reward-progress"><div class="v9-space-between"><span>Уровень '+level()+'</span><b>'+state.xp+' XP</b><span>Уровень '+Math.min(100,level()+1)+'</span></div>'+bar(pct())+'</div>'+ 
+       '<div class="v9-reward-progress"><div class="v9-space-between"><span>Уровень '+level()+'</span><b>'+state.xp+' XP</b><span>Уровень '+Math.min(5,level()+1)+'</span></div>'+bar(pct())+'</div>'+ 
        (r.newLevel>r.oldLevel?'<h3 class="v9-promotion">⚔ Новый уровень '+r.newLevel+'!</h3>':'<p class="v9-reward-note">Ты приблизился к следующему уровню.</p>')+
        '<div class="v9-loot-label">Награда за дисциплину</div><div class="v9-loot"><div>💧 <b>Энергия</b><small>Игровой бонус</small></div><div>🏅 <b>Опыт</b><small>+'+r.gained+' XP</small></div></div>'+ 
        '<button class="v9-primary-cta" data-action="go-hero">Продолжить путь</button></div>';
