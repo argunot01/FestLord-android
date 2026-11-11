@@ -20,3 +20,8 @@
 .ml-mini{display:flex;align-items:center;padding:10px 13px;gap:10px;background:#28221b;border-top:1px solid #a77d42}
 .ml-now{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f0d8a5}
 .ml-mini button{border:1px solid #bd9455;border-radius:8px;color:#f8d68a;background:#22252b;min-width:33px;min-height:33px}
+
+/* Five unified steppe heroes. The final illustration contains a real wolf. */
+.heroScene .heroArtwork{object-fit:contain;object-position:center bottom;mix-blend-mode:lighten}
+.heroScene .wolf{display:none}
+.gallery-picture img{mix-blend-mode:lighten}
