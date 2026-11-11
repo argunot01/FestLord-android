@@ -20,21 +20,32 @@ import java.util.Locale
  * Batyr's Way v0.5.
  * The UI is a self-contained, offline HTML5 game view with original embedded character artwork.
  * Gameplay data lives in WebView localStorage. One-time migration imports the v0.4 native data.
- * No JavaScript bridge is exposed to untrusted remote content.
+ * The narrow native music bridge serves only the packaged local UI. Remote navigation is blocked.
  */
 class MainActivity : Activity() {
     private lateinit var browser: WebView
+    private lateinit var musicStore: NativeMusicStore
     private var chooser: ValueCallback<Array<Uri>>? = null
     private val fileRequestCode = 1068
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        musicStore = NativeMusicStore(this) { event, detail ->
+            runOnUiThread {
+                if (::browser.isInitialized && browser.url == "file:///android_asset/index.html") {
+                    val js = "window.BatyrMusic && window.BatyrMusic.onNativeEvent(" +
+                        JSONObject.quote(event) + "," + JSONObject.quote(detail) + ")"
+                    browser.evaluateJavascript(js, null)
+                }
+            }
+        }
         window.statusBarColor = Color.rgb(13, 17, 23)
         window.navigationBarColor = Color.rgb(13, 17, 23)
 
         browser = WebView(this).apply {
             setBackgroundColor(Color.rgb(8, 11, 17))
             settings.javaScriptEnabled = true
+            addJavascriptInterface(musicStore, "NativeMusic")
             settings.domStorageEnabled = true
             settings.allowFileAccess = true
             settings.allowContentAccess = true
@@ -124,6 +135,10 @@ class MainActivity : Activity() {
     @Deprecated("Legacy activity result for WebView audio picker")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == NativeMusicStore.REQUEST_PICK_MUSIC) {
+            if (resultCode == RESULT_OK) data?.data?.let { musicStore.receivePicked(it) }
+            return
+        }
         if (requestCode == fileRequestCode) {
             val uri = if (resultCode == RESULT_OK) data?.data else null
             chooser?.onReceiveValue(uri?.let { arrayOf(it) })
@@ -141,6 +156,7 @@ class MainActivity : Activity() {
     override fun onDestroy() {
         chooser?.onReceiveValue(null)
         chooser = null
+        musicStore.release()
         browser.loadUrl("about:blank")
         browser.destroy()
         super.onDestroy()
