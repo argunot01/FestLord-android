@@ -47,7 +47,7 @@ ctx.finish();
 assert.equal(state.xp,27);
 assert.equal(model().missingXP,39);
 assert.equal(model().missingSessions,1);
-assert.equal(model().missingPasses,1);
+assert.equal(model().missingPasses,2,"personal target rises after initial baseline is established");
 assert.match(ctx.reward(),/Бонус за 30.0 балла нагрузки/);
 assert.match(ctx.reward(),/\+3 XP/);
 assert.match(ctx.workout(),/Уже начислено сегодня/);
