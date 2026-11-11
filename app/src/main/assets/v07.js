@@ -50,8 +50,14 @@
 
   // Keep legacy XP but don't count unverified legacy checkbox taps as completed workouts.
   level = function () {
-    let n = 1;
+    // Once earned, a rank is never taken away because of a rest day,
+    // a lighter rehab day or later changes to the last-six-session window.
+    let n = Math.max(1,Math.min(5,Math.floor(Number(state.highestRank)||1)));
     while (n < 5 && qualifiesFor(n + 1)) n++;
+    if(n>(Number(state.highestRank)||1)) {
+      state.highestRank=n;
+      save();
+    }
     return n;
   };
   stage = function () { return level(); };
