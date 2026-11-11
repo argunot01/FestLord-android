@@ -2,7 +2,7 @@
 
 Android fitness RPG with a steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## v0.9
+## v1.0
 - Interactive, image-rich game UI matching the approved mobile layout: bright Kazakh-steppe photographs, yurt, mountains, five character chapters, gold-framed navigation, workout cards, focused exercise, and reward screen.
 - Five separate full-scene progression illustrations cropped from the approved art. The Legend portrait visibly includes its gray wolf. New vivid scene art is in `app/src/main/assets/scenes/`.
 - Restyled interactive hero overview, step-aware workout list and progress, single-exercise session display, and XP reward page. Music library and level qualifications remain in place.
@@ -19,6 +19,7 @@ Android fitness RPG with a steppe-inspired design: a lean beginner grows into a 
 - Custom workout editor: user-created exercise name, repetitions or seconds, sets, equipment weight.
 - Mark individual sets, count repetitions in focus mode, then earn XP for a meaningful completed workout once per day (no individual checkbox XP).
 - Reward screen and direct HTTPS music streams.
+- **Full music player:** compact bar displayed throughout the game, tap to expand into track progress slider, elapsed/total time, previous/next, pause/play and stop; automatic next track, repeat-one, repeat-playlist and ordered-once modes. Repeat choice persists after restart. A native Android playback bridge supports duration/time reporting and seeking.
 - **SANA-style native music library**: select any supported audio file through Android’s system picker, copy it into app-private storage for offline use, assign a custom title, play/pause/stop and delete it. Imported tracks appear newest first and persist after app restart. Supported audio playback depends on the device codec.
 - Audio files stay on device; the app has no access to unrelated files. Deleting a saved track does not delete the original file from the phone.
 - Browser preview uses IndexedDB for saving audio; Android uses app-private filesystem via a narrow WebView bridge.
