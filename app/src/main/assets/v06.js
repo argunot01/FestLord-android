@@ -24,7 +24,7 @@
       '<div class="rpg-stars" aria-hidden="true"></div><div class="rpg-sun" aria-hidden="true"></div>');
     const preview=state.previewStage||stage();
     const copy=preview>stage()
-      ?'<div class="chapter-notice">Будущий облик · открывается на уровне '+stageRanges[preview]</div>'
+      ?'<div class="chapter-notice">Будущий облик · открывается на уровне '+stageRanges[preview]+'</div>'
       :'<div class="chapter-notice live">Твой текущий путь · этап '+stage()+'</div>';
     html=html.replace('<div class="heroStats">',copy+'<div class="heroStats">');
     html=html.replace('Сегодня выполнено','Сегодня пройдено');
