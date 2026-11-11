@@ -129,7 +129,7 @@
        '<button class="v9-primary-cta" data-action="go-hero">Продолжить путь</button></div>';
   };
   const keepRender=render;
-  render=function(){keepRender();if(state.view==='hero'){
+  render=function(){keepRender();const nav=document.getElementById('nav');if(nav)nav.style.display=(state.view==='session'||state.view==='reward')?'none':'';if(state.view==='hero'){
     const h=document.querySelector('.brand'); if(h)h.innerHTML='<span class="v9-brand-mark">❖</span><span>Batyr’s Way</span>';
   }};
   document.addEventListener('click', function(event){
