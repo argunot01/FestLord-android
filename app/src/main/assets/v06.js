@@ -2,13 +2,13 @@
 (function(){
   'use strict';
   const stageNames=['','Новичок','Боец','Воин','Батыр','Легенда'];
-  const stageRanges=['','1–10','11–25','26–50','51–75','76–100'];
+  const stageRanges=['','1','2','3','4','5'];
   const stagePics=[0,1,2,3,4];
 
   function artFor(n) { return HERO_IMAGES[stagePics[n-1]]; }
   function milestones() {
     const current=stage(), preview=state.previewStage||current;
-    return '<div class="rpg-heading"><span>ПУТЬ СТАНОВЛЕНИЯ БАТЫРА</span><span>'+level()+' / 100</span></div>'+
+    return '<div class="rpg-heading"><span>ПУТЬ СТАНОВЛЕНИЯ БАТЫРА</span><span>'+level()+' / 5</span></div>'+
       '<div class="rpg-chapters">'+stageNames.slice(1).map((name,i)=>{
         const n=i+1,active=n===preview,unlocked=n<=current;
         return '<button type="button" class="rpg-chapter '+(active?'selected ':'')+(unlocked?'unlocked':'locked')+
@@ -24,7 +24,7 @@
       '<div class="rpg-stars" aria-hidden="true"></div><div class="rpg-sun" aria-hidden="true"></div>');
     const preview=state.previewStage||stage();
     const copy=preview>stage()
-      ?'<div class="chapter-notice">Будущий облик · открывается на '+stageRanges[preview]+' уровнях</div>'
+      ?'<div class="chapter-notice">Будущий облик · открывается на уровне '+stageRanges[preview]</div>'
       :'<div class="chapter-notice live">Твой текущий путь · этап '+stage()+'</div>';
     html=html.replace('<div class="heroStats">',copy+'<div class="heroStats">');
     html=html.replace('Сегодня выполнено','Сегодня пройдено');
@@ -41,7 +41,7 @@
         return '<button type="button" class="gallery-item '+(locked?'locked':'unlocked')+
           '" data-action="preview:'+n+'" aria-label="Открыть предпросмотр '+name+'">'+
           '<div class="gallery-picture"><img loading="lazy" src="'+artFor(n)+'" alt=""></div>'+
-          '<strong>'+(locked?'🔒 ':'')+name+'</strong><small>Уровни '+stageRanges[n]+'</small></button>';
+          '<strong>'+(locked?'🔒 ':'')+name+'</strong><small>Уровень '+stageRanges[n]+'</small></button>';
       }).join('')+'</div></section>';
   }
 
@@ -123,7 +123,7 @@
       '<div class="title">⚔ Мои тренировки</div>'+
       '<div class="rpg-workout-summary"><div><strong>'+tally+'</strong><small>упражнений</small></div>'+
       '<div><strong>'+setsDone()+'/'+setsTotal()+'</strong><small>подходов</small></div>'+
-      '<div><strong>'+Math.max(0,120-(state.dayXp[today()]||0))+'</strong><small>XP доступно</small></div></div>');
+      '<div><strong>'+Math.max(0,240-(state.dayXp[today()]||0))+'</strong><small>XP доступно</small></div></div>');
     return html;
   };
 
