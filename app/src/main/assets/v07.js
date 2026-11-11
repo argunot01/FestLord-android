@@ -20,16 +20,14 @@
     return [0, 0, 1, 2, 3, 4][Math.max(1, Math.min(5, n))];
   };
 
-  const levelXP = n => {
-    if (n <= 1) return 0;
-    const s = n - 1;
-    return Math.ceil(65 * s + 0.5 * s * s);
-  };
-  const requiredSessions = n => {
-    if (n <= 1) return 0;
-    const s = n - 1;
-    return Math.ceil(s * 1.5 + s * s * 0.012);
-  };
+  // Five real hero levels. Inter-stage increments approximate 23, 70, 170,
+  // and 340 moderate sessions. These are training estimates, not fixed days.
+  const rankXP = [0, 0, 2400, 9600, 27600, 63600];
+  const rankSessions = [0, 0, 10, 40, 115, 265];
+  const rankFloors = [0, 12, 20, 35, 50, 65];
+  const rankFactors = [0, 0, .90, 1.04, 1.14, 1.25];
+  const levelXP = n => rankXP[Math.min(5, Math.max(1, Math.floor(n)||1))];
+  const requiredSessions = n => rankSessions[Math.min(5, Math.max(1, Math.floor(n)||1))];
   const history = () => Object.entries(state.trainingHistory)
     .filter(([, v]) => v && Number.isFinite(Number(v.load)) && Number(v.load) >= 12)
     .sort((a, b) => b[0].localeCompare(a[0]));
@@ -40,8 +38,10 @@
       ? values.reduce((a, b) => a + b, 0) / values.length
       : 12;
   };
-  const stageFloor = n => n <= 10 ? 12 : n <= 25 ? 20 : n <= 50 ? 30 : n <= 75 ? 45 : 60;
-  const targetLoad = n => n <= 1 ? 12 : Math.max(stageFloor(n), Math.ceil(baseline() * (1 + 0.006 * (n - 1))));
+  const targetLoad = n => {
+    const rank = Math.min(5,Math.max(1,Math.floor(n)||1));
+    return rank===1 ? 12 : Math.max(rankFloors[rank],Math.ceil(baseline()*rankFactors[rank]));
+  };
   const recentLoads = () => history().slice(0, 6).map(([, v]) => Number(v.load));
   const loadPassCount = n => recentLoads().filter(x => x >= targetLoad(n)).length;
   const qualifiesFor = n => state.xp >= levelXP(n)
@@ -51,20 +51,19 @@
   // Keep legacy XP but don't count unverified legacy checkbox taps as completed workouts.
   level = function () {
     let n = 1;
-    while (n < 100 && qualifiesFor(n + 1)) n++;
+    while (n < 5 && qualifiesFor(n + 1)) n++;
     return n;
   };
-  stage = function () {
-    const n = level();
-    return n <= 10 ? 1 : n <= 25 ? 2 : n <= 50 ? 3 : n <= 75 ? 4 : 5;
-  };
+  stage = function () { return level(); };
 
   function workoutLoad(check = isDone) {
     let sets = 0, reps = 0, seconds = 0, cardioSeconds = 0, stabilitySeconds = 0;
+    const distinctNames = new Set();
     state.ex.forEach(x => {
       for (let n = 1; n <= x.sets; n++) {
         if (!check(x, n)) continue;
         sets++;
+        distinctNames.add(String(x.name||"").toLowerCase().trim());
         if (x.kind === "Секунды") {
           seconds += x.amount;
           const className = typeof window !== "undefined" && typeof window.BATYR_GET_CATEGORY === "function"
@@ -78,13 +77,21 @@
       }
     });
     // Comparable in-app workload units. No bonus for selecting unsafe heavy weight.
-    const load = Math.round((reps + (seconds - stabilitySeconds) / 30 + stabilitySeconds / 7.5) * 10) / 10;
-    return {sets, reps, seconds, cardioSeconds, stabilitySeconds, load};
+    const load = Math.round((reps + (seconds - stabilitySeconds) / 20 + stabilitySeconds / 7.5) * 10) / 10;
+    const exerciseCount = distinctNames.size;
+    return {sets, reps, seconds, cardioSeconds, stabilitySeconds, exerciseCount, load};
   }
   function meaningful(w) {
     return (w.sets >= 2 && w.load >= 12) ||
       (w.cardioSeconds >= 600 && w.load >= 12) ||
       (w.sets >= 2 && w.stabilitySeconds >= 90);
+  }
+  function xpBreakdown(load, exerciseCount = 1) {
+    const base=30;
+    const effort=Math.max(0,Math.floor(0.70*Math.max(0,Number(load)||0)));
+    const variety=Math.min(20,Math.max(0,Math.floor(exerciseCount)-1)*5);
+    const earned=Math.min(240,base+effort+variety);
+    return {earned,base,effort:Math.min(effort,earned-base),variety:Math.max(0,earned-base-Math.min(effort,earned-base)),limit:240};
   }
   function exam() {
     const next = Math.min(100, level() + 1);
@@ -100,7 +107,7 @@
     window.BATYR_LEVEL_ENGINE = {
       levelXP, requiredSessions, history, completedSessions,
       baseline, targetLoad, loadPassCount, workoutLoad, meaningful,
-      earnedForLoad: load => Math.min(38, 24 + Math.floor(Math.max(0,Number(load)||0)/10))
+      xpBreakdown, rankXP, rankSessions, earnedForLoad: (load, count=1) => xpBreakdown(load,count).earned
     };
   }
 
@@ -131,10 +138,10 @@
     }
 
     const oldLevel = level();
-    const gained = Math.min(38, 24 + Math.floor(w.load / 10));
+    const gained = xpBreakdown(w.load,w.exerciseCount).earned;
     const statScore = typeof window !== "undefined" && typeof window.BATYR_SCORE_WORKOUT === "function"
       ? window.BATYR_SCORE_WORKOUT() : null;
-    state.trainingHistory[date] = {load: w.load, sets: w.sets, reps: w.reps,
+    state.trainingHistory[date] = {load: w.load, exerciseCount: w.exerciseCount, sets: w.sets, reps: w.reps,
       seconds: w.seconds, cardioSeconds: w.cardioSeconds, stabilitySeconds: w.stabilitySeconds, earned: gained, savedAt: Date.now(),
       statPoints: statScore ? statScore.points : null,
       statBreakdown: statScore ? statScore.breakdown : null,
@@ -145,7 +152,7 @@
     state.xp += gained;
     const newLevel = level();
     state.lastReward = {
-      gained, load: w.load, oldLevel, newLevel, newRank: ranks[stage()],
+      gained, load: w.load, exerciseCount: w.exerciseCount, xpParts: xpBreakdown(w.load,w.exerciseCount), oldLevel, newLevel, newRank: ranks[stage()],
       sessions: completedSessions(),
       statGains: statScore ? statScore.points : null
     };
@@ -172,7 +179,7 @@
     html = html.replace(/(<div class="grow">[\s\S]*?<div class="progress"><div style="width:)[\d.]+(%"><\/div><\/div>)/,
       '$1' + Math.max(0, percent).toFixed(1) + '$2');
     html += '<div class="card"><div class="caps">ИСПЫТАНИЕ НА СЛЕДУЮЩИЙ УРОВЕНЬ</div>' +
-      (q.current >= 100 ? '<h2>Достигнут 100-й уровень!</h2>' :
+      (q.current >= 5 ? '<h2>Ты стал Легендой!</h2>' :
       '<h2>Уровень ' + q.next + ' · проходной балл</h2>' +
       '<div class="pass-row"><span>Очки XP</span><b>' + state.xp + ' / ' + q.points + '</b></div>' +
       '<div class="pass-row"><span>Полноценные тренировки</span><b>' +
@@ -181,8 +188,7 @@
         q.load + ' баллов · ' + q.passes + '/2</b></div>' +
       '<p>Для повышения уровня нужны все три условия. Последнее: два достижения нагрузки '+
       'среди шести последних полноценных тренировок.</p>') +
-      '<div class="small">Нагрузка рассчитывается из выполненных повторений и секунд, '+
-      'а не из выбранного названия упражнения.</div></div>';
+      '<div class="small">Нагрузка зависит от выполненных повторений, длительности и количества разных упражнений. Рангов всего пять.</div></div>';
     return html;
   };
 
