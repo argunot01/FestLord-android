@@ -13,7 +13,7 @@
   const floor = x => Math.max(0,Math.min(100,x));
   const stageLevel = n=> n===1?1:n===2?11:n===3?26:n===4?51:76;
   const gameXP = n => {const s=n-1;return Math.ceil(65*s+0.5*s*s)};
-  const nextXp = level()>=100? gameXP(100):gameXP(level()+1);
+  const nextXp = () => level()>=100? gameXP(100):gameXP(level()+1);
   function pct(){const cur=gameXP(level()),next=nextXp();return floor((state.xp-cur)/Math.max(1,next-cur)*100);}
   const bar = percent=>'<div class="v9-meter"><div style="width:'+floor(percent)+'%"></div></div>';
   const stat=(mark,name,value)=>'<div class="v9-stat"><span class="v9-stat-icon">'+mark+'</span><span>'+name+'</span><b>'+value+'</b></div>';
