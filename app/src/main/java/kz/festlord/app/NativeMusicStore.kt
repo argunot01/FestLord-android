@@ -26,6 +26,7 @@ class NativeMusicStore(
     private val folder = File(activity.filesDir, "music_library").apply { mkdirs() }
     private var player: MediaPlayer? = null
     private var playingId: String? = null
+    private var prepared = false
     private val fileRegex = Regex("^[a-f0-9-]{36}\\.(mp3|m4a|aac|ogg|opus|wav|flac|amr|3gp|audio)$")
 
     private fun tracks(): JSONArray =
@@ -174,8 +175,8 @@ class NativeMusicStore(
                 playingId = id
                 player = MediaPlayer().apply {
                     setDataSource(file.absolutePath)
-                    setOnPreparedListener { it.start(); notifyJs("playing", id) }
-                    setOnCompletionListener { notifyJs("finished", id) }
+                    setOnPreparedListener { it -> prepared = true; it.start(); notifyJs("playing", id); reportPosition() }
+                    setOnCompletionListener { notifyJs("finished", id); reportPosition() }
                     setOnErrorListener { _, _, _ ->
                         notifyJs("error", "Этот формат не воспроизводится")
                         true
@@ -193,6 +194,7 @@ class NativeMusicStore(
     fun togglePause() {
         activity.runOnUiThread {
             val p = player ?: return@runOnUiThread
+            if (!prepared) return@runOnUiThread
             try {
                 if (p.isPlaying) { p.pause(); notifyJs("paused", playingId ?: "") }
                 else { p.start(); notifyJs("playing", playingId ?: "") }
@@ -205,9 +207,44 @@ class NativeMusicStore(
         activity.runOnUiThread { release(); notifyJs("stopped", "") }
     }
 
+    private fun reportPosition() {
+        val p = player
+        val data = JSONObject()
+        try {
+            data.put("id", playingId ?: "")
+            data.put("position", if (prepared && p != null) p.currentPosition else 0)
+            data.put("duration", if (prepared && p != null) p.duration else 0)
+            data.put("playing", prepared && p?.isPlaying == true)
+        } catch (_: Exception) {
+            data.put("position", 0)
+            data.put("duration", 0)
+            data.put("playing", false)
+        }
+        notifyJs("position", data.toString())
+    }
+
+    @JavascriptInterface
+    fun requestPosition() {
+        activity.runOnUiThread { reportPosition() }
+    }
+
+    @JavascriptInterface
+    fun seekTo(positionMs: Int) {
+        activity.runOnUiThread {
+            val p = player ?: return@runOnUiThread
+            if (!prepared) return@runOnUiThread
+            try {
+                val duration = p.duration.coerceAtLeast(0)
+                p.seekTo(positionMs.coerceIn(0, duration))
+                reportPosition()
+            } catch (_: Exception) { notifyJs("error", "Не удалось перемотать трек") }
+        }
+    }
+
     fun release() {
         try { player?.release() } catch (_: Exception) {}
         player = null
         playingId = null
+        prepared = false
     }
 }
