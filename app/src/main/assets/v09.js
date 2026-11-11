@@ -49,9 +49,12 @@
   }
   function createHero(){
     const current=stage(),shown=state.previewStage||current,chapter=chapters[shown-1];
-    const lvl=level(),future=shown>current,stepNotice=future?'ПРЕДПРОСМОТР · ОТКРОЕТСЯ С УРОВНЯ '+stageLevel(shown):'ТВОЙ ТЕКУЩИЙ ЭТАП';
-    const showAt=future?stageLevel(shown):lvl;
-    const shownStats=strengthAt(showAt);
+    const lvl=level(),future=shown>current,preview=shown!==current,
+      stepNotice=future?'ПРЕДПРОСМОТР · ОТКРОЕТСЯ С УРОВНЯ '+stageLevel(shown):
+        preview?'ПРЕДПРОСМОТР ЭТАПА '+shown:'ТВОЙ ТЕКУЩИЙ ЭТАП';
+    const showAt=preview?stageLevel(shown):lvl;
+    const shownStats=preview?strengthAt(showAt):
+      (typeof window.BATYR_GAME_STATS==="function"?window.BATYR_GAME_STATS():strengthAt(lvl));
     const stageImg=stageArt(shown);
     return chaptersPanel()+
       '<section class="v9-hero-stage">'+
@@ -60,7 +63,7 @@
         '<div class="v9-stage-topline"><span class="v9-stage-ribbon">ЭТАП '+shown+' · '+chapter.name+'</span></div>'+ 
         '<div class="v9-hero-level"><b>'+(future?'ЭТАП '+shown:'УР. '+lvl)+'</b><span>'+(future?'Уровни '+chapter.range:'XP '+state.xp+' / '+nextXp())+'</span>'+bar(future?0:pct())+
           (future?'<small class="v10-current-lvl">Твой уровень: '+lvl+'</small>':'')+'</div>'+
-        '<div class="v9-hero-stats"><div class="v10-stat-caption">'+(future?'ПОКАЗАТЕЛИ ЭТАПА '+shown:'ТВОИ ХАРАКТЕРИСТИКИ')+'</div>'+statMarkup(shownStats)+'</div>'+ 
+        '<div class="v9-hero-stats"><div class="v10-stat-caption">'+(preview?'ПРИМЕР ПОКАЗАТЕЛЕЙ ЭТАПА '+shown:'ТВОИ ИГРОВЫЕ ПОКАЗАТЕЛИ')+'</div>'+statMarkup(shownStats)+'</div>'+ 
         '<div class="v9-landscape-label"><b>'+chapter.name+'</b><span>'+stepNotice+'</span></div>'+ 
         '<div class="v9-action-underlay">'+navTiles()+'</div>'+ 
       '</section>'+ 
@@ -133,10 +136,15 @@
   };
   reward=function(){
     const r=state.lastReward||{gained:0,newLevel:level(),load:0,sessions:0,oldLevel:level()};
+    const totals=typeof window.BATYR_GAME_STATS==="function"?window.BATYR_GAME_STATS():strengthAt(level());
+    const points=r.statGains||{};
+    const displayPoint=k=>'+'+Number(points[k]||0).toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1});
+    const gainRows=statMarkup(['strength','endurance','resilience','energy'].map(displayPoint));
     return '<div class="v9-reward"><div class="v9-reward-head">Тренировка завершена!</div>'+ 
        '<div class="v9-laurels">❧ <b>+'+r.gained+' XP</b> ❧</div>'+ 
-       '<div class="v9-panel"><h3>Текущие характеристики героя</h3>'+statMarkup(strengthAt(level()))+
-       '<p class="v10-attrs-note">Показатели растут при повышении уровня; XP учитывается после зачтённой тренировки.</p></div>'+ 
+       '<div class="v9-panel"><h3>Прокачка за эту тренировку</h3>'+gainRows+
+       '<h3>Текущие показатели героя</h3>'+statMarkup(totals)+
+       '<p class="v10-attrs-note">Разные упражнения прокачивают разные навыки. Это игровые баллы, а не медицинский показатель физической формы.</p></div>'+ 
        '<div class="v9-reward-progress"><div class="v9-space-between"><span>Уровень '+level()+'</span><b>'+state.xp+' XP</b><span>Уровень '+Math.min(100,level()+1)+'</span></div>'+bar(pct())+'</div>'+ 
        (r.newLevel>r.oldLevel?'<h3 class="v9-promotion">⚔ Новый уровень '+r.newLevel+'!</h3>':'<p class="v9-reward-note">Ты приблизился к следующему уровню.</p>')+
        '<div class="v9-loot-label">Награда за дисциплину</div><div class="v9-loot"><div>💧 <b>Энергия</b><small>Игровой бонус</small></div><div>🏅 <b>Опыт</b><small>+'+r.gained+' XP</small></div></div>'+ 
