@@ -67,7 +67,9 @@
         sets++;
         if (x.kind === "Секунды") {
           seconds += x.amount;
-          if (/ходь|бег|вел|плаван|эллип|кардио|прогул|шаг|жүру|walking|cycling|run/i.test(x.name)) cardioSeconds += x.amount;
+          if (typeof window !== "undefined" && typeof window.BATYR_GET_CATEGORY === "function"
+            ? window.BATYR_GET_CATEGORY(x) === "cardio"
+            : /ходь|бег|вел|плаван|эллип|кардио|прогул|шаг|жүру|walking|cycling|run/i.test(x.name)) cardioSeconds += x.amount;
         }
         else reps += x.amount;
       }
@@ -117,8 +119,13 @@
 
     const oldLevel = level();
     const gained = Math.min(38, 24 + Math.floor(w.load / 10));
+    const statScore = typeof window !== "undefined" && typeof window.BATYR_SCORE_WORKOUT === "function"
+      ? window.BATYR_SCORE_WORKOUT() : null;
     state.trainingHistory[date] = {load: w.load, sets: w.sets, reps: w.reps,
-      seconds: w.seconds, cardioSeconds: w.cardioSeconds, earned: gained, savedAt: Date.now()};
+      seconds: w.seconds, cardioSeconds: w.cardioSeconds, earned: gained, savedAt: Date.now(),
+      statPoints: statScore ? statScore.points : null,
+      statBreakdown: statScore ? statScore.breakdown : null,
+      statExercises: statScore ? statScore.exercises : null};
     if (state.baselineLoads.length < 3) state.baselineLoads.push(w.load);
     state.dayXp[date] = gained;
     state.finished[date] = true;
@@ -126,7 +133,8 @@
     const newLevel = level();
     state.lastReward = {
       gained, load: w.load, oldLevel, newLevel, newRank: ranks[stage()],
-      sessions: completedSessions()
+      sessions: completedSessions(),
+      statGains: statScore ? statScore.points : null
     };
     save();
     state.view = "reward";
