@@ -72,4 +72,11 @@ const before=stats();
 ctx.finish();
 assert.equal(state.trainingHistory[date],undefined,"one repetition not a qualified workout");
 assert.equal(stats().strength,before.strength,"one push-up can't farm RPG stats");
+date="2026-11-14";
+state.ex=[{id:"pl",name:"Планка",kind:"Секунды",amount:45,sets:2,category:"stability"}];
+state.done[date+"/pl/1"]=true;state.done[date+"/pl/2"]=true;
+const beforeHold=stats();ctx.finish();const afterHold=stats();
+assert.ok(state.trainingHistory[date], "2x45-sec plank qualifies as a manageable stability session");
+assert.ok(afterHold.resilience-beforeHold.resilience>afterHold.endurance-beforeHold.endurance,
+  "stability exercise mainly develops game resilience");
 console.log("PASS: strength/cardio/static classification, differentiated gains, history snapshot, no duplicate or single-rep farm.");
