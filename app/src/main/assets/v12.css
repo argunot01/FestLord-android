@@ -1,0 +1,48 @@
+/* Batyr's Way 1.2 — understandable XP and next-level qualification dashboard. */
+.v9-next-rank{display:none!important}
+.xp12-card,.xp12-workout,.xp12-reward-detail{
+  border:1px solid #9d7944;border-radius:15px;
+  background:linear-gradient(145deg,#2d2720,#171d27 64%,#14171c);
+  padding:15px;margin:14px 0;
+  box-shadow:inset 0 1px #ffd77c24,0 7px 19px #0005
+}
+.xp12-kicker{color:#ffd18a;font-size:10px;font-weight:900;letter-spacing:1.1px;margin-bottom:8px}
+.xp12-title-row{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:3px 0 12px}
+.xp12-title-row h2{margin:0;color:#fae0aa;font:800 24px system-ui}
+.xp12-title-row>b{color:#ffd18a;font-size:13px}
+.xp12-meter{height:9px;border-radius:40px;background:#48494c;overflow:hidden;border:1px solid #665440}
+.xp12-meter>div{height:100%;background:linear-gradient(90deg,#b88739,#ffdf8d);box-shadow:0 0 8px #ffb746aa;border-radius:40px}
+.xp12-forecast{display:flex;align-items:flex-start;gap:10px;margin:14px 0;padding:12px 10px;background:linear-gradient(115deg,#463826,#2b2926);border:1px solid #b68e56;border-radius:12px}
+.xp12-forecast-symbol{width:36px;height:36px;border-radius:50%;border:1px solid #ba9654;flex:none;display:grid;place-items:center;background:#241e17;font-size:20px}
+.xp12-forecast div{flex:1;display:flex;flex-direction:column;gap:6px}
+.xp12-forecast strong{font-size:14px;color:#ffe6b6}
+.xp12-forecast small{font-size:11px;color:#d6c7af;line-height:1.45}
+.xp12-gates{display:flex;flex-direction:column;gap:8px}
+.xp12-gate{border:1px solid #635844;border-radius:10px;padding:10px;background:#1d2228}
+.xp12-gate-title{display:flex;align-items:center;gap:10px}
+.xp12-mark{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;font-weight:bold;font-size:15px;flex:none}
+.xp12-mark.ready{background:#2c4c32;border:1px solid #78b780;color:#c2ffc4}
+.xp12-mark.pending{background:#554128;border:1px solid #b4874c;color:#ffdaa0}
+.xp12-gate-title div{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.xp12-gate-title strong{font-size:13px;color:#f6e4cc}
+.xp12-gate-title span:not(.xp12-mark){font-size:11px;color:#afa897;line-height:1.4}
+.xp12-gate-title>b{font-size:13px;color:#ffda8a;white-space:nowrap}
+.xp12-gate-footer{font-size:11px;color:#b9c3ac;margin:8px 0 0 34px}
+.xp12-why{border:1px solid #b78c4c;background:#282620;border-radius:10px;color:#f9d18a;padding:12px;font-weight:700;font-size:12px;margin:13px 0 5px;width:100%;cursor:pointer}
+.xp12-fine,.xp12-card p{font-size:11px;color:#b3b0ac;line-height:1.6}
+.xp12-estimate{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:4px 0 14px}
+.xp12-estimate strong{font-size:27px;color:#ffdc95}
+.xp12-estimate span{font-size:11px;color:#c9c3b4;text-align:right}
+.xp12-workout-row,.xp12-reward-detail>div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #584c39;padding:10px 0}
+.xp12-workout-row span{font-size:12px;color:#dfd9cf}
+.xp12-workout-row b,.xp12-reward-detail b{color:#f9da9c;white-space:nowrap}
+.xp12-workout>p{font-size:12px;color:#e7d4bb;line-height:1.5}
+.xp12-workout>small{display:block;color:#c3b79e;font-size:11px;line-height:1.55}
+.xp12-dialog{max-height:84dvh;overflow-y:auto}
+.xp12-dialog h3{font-size:15px;color:#f0c983;margin:16px 0 9px}
+.xp12-dialog p{line-height:1.5}
+.xp12-examples{display:flex;flex-direction:column;gap:8px}
+.xp12-examples>div{padding:10px;background:#242a2c;border:1px solid #655037;border-radius:8px;font-size:12px}
+.xp12-examples b{display:block;margin-top:5px;color:#f9d28c}
+.xp12-reward-detail>div{font-size:12px;color:#eadbc6}
+.xp12-reward-detail p{font-size:11px;margin:12px 0 3px}
