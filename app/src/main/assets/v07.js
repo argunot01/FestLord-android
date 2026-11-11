@@ -40,7 +40,8 @@
       ? values.reduce((a, b) => a + b, 0) / values.length
       : 12;
   };
-  const targetLoad = n => n <= 1 ? 12 : Math.max(12, Math.ceil(baseline() * (1 + 0.006 * (n - 1))));
+  const stageFloor = n => n <= 10 ? 12 : n <= 25 ? 20 : n <= 50 ? 30 : n <= 75 ? 45 : 60;
+  const targetLoad = n => n <= 1 ? 12 : Math.max(stageFloor(n), Math.ceil(baseline() * (1 + 0.006 * (n - 1))));
   const recentLoads = () => history().slice(0, 6).map(([, v]) => Number(v.load));
   const loadPassCount = n => recentLoads().filter(x => x >= targetLoad(n)).length;
   const qualifiesFor = n => state.xp >= levelXP(n)
