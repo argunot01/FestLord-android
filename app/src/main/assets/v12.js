@@ -6,6 +6,13 @@
   const upper=(x,min,max)=>Math.max(min,Math.min(max,Number(x)||0));
   const nice=n=>Math.floor(Number(n)||0).toLocaleString('ru-RU');
   const bar=p=>'<div class="xp12-meter"><div style="width:'+upper(p,0,100).toFixed(1)+'%"></div></div>';
+  function plural(n,one,few,many){
+    n=Math.abs(Math.floor(Number(n)||0));
+    if(n%100>=11&&n%100<=14)return many;
+    if(n%10===1)return one;
+    if(n%10>=2&&n%10<=4)return few;
+    return many;
+  }
   const mark=ok=>'<span class="xp12-mark '+(ok?'ready':'pending')+'">'+(ok?'✓':'•')+'</span>';
   const icons=['⭐','📅','⚔'];
   function getModel(){
@@ -58,9 +65,9 @@
       gate('Опыт XP',nice(state.xp)+' / '+nice(p.xpNeeded),
         'Осталось '+nice(p.missingXP)+' XP',p.xpOK,'XP за полноценные тренировки'),
       gate('Полноценные тренировки',nice(p.sessions)+' / '+nice(p.sessionsNeeded),
-        'Осталось '+nice(p.missingSessions),p.sessionsOK,'За один день учитывается одна тренировка'),
+        'Осталось '+nice(p.missingSessions)+' '+plural(p.missingSessions,'тренировка','тренировки','тренировок'),p.sessionsOK,'За один день учитывается одна тренировка'),
       gate('Личная нагрузка',p.passes+' / 2',
-        'Ещё '+nice(p.missingPasses)+' раза(раз) достигнуть нормы',p.loadOK,
+        'Осталось '+nice(p.missingPasses)+' '+plural(p.missingPasses,'зачёт','зачёта','зачётов')+' нагрузки',p.loadOK,
         'Норма: '+nice(p.loadTarget)+' баллов, 2 раза из последних 6')
     ].join("");
     return '<section class="xp12-card" id="xp12-guide">'+
@@ -103,7 +110,7 @@
       '<p>'+warn+'</p>'+
       '<button class="xp12-why" data-action="xp12-explain">Почему именно столько XP?</button>'+
       '<small>Следующий уровень '+p.next+': нужно ещё '+nice(p.missingXP)+' XP, '+nice(p.missingSessions)+
-      ' тренировок и '+nice(p.missingPasses)+' выполнения нормы.</small></section>';
+       ' '+plural(p.missingSessions,'тренировка','тренировки','тренировок')+' и '+nice(p.missingPasses)+' '+plural(p.missingPasses,'зачёт','зачёта','зачётов')+' нагрузки.</small></section>';
   }
   function explain() {
     document.getElementById("modal").innerHTML='<div class="overlay" id="overlay">'+
@@ -117,6 +124,8 @@
       '<div>Ходьба и кардио <b>30 секунд = 1 балл</b></div>'+
       '<div>Планка и статические удержания <b>7,5 секунд = 1 балл</b></div></div>'+
       '<p class="small">Пример: 3 × 10 отжиманий = 30 баллов нагрузки, значит +24 базовых XP +3 бонусных = <b>27 XP</b>.</p>'+
+      '<h3>XP и характеристики — разные баллы</h3>'+
+      '<p>XP приближают новый уровень. Сила, выносливость и стойкость растут отдельно — от типа упражнений. Баллы нагрузки нужны, чтобы подтвердить достаточное тренировочное усилие.</p>'+
       '<h3>Когда растёт уровень?</h3>'+
       '<p>Нужно одновременно накопить XP, пройти установленное количество полноценных занятий и минимум дважды достигнуть личного норматива среди шести последних тренировок.</p>'+
       '<p class="small">Индивидуальную норму приложение определяет по первым трём полноценным занятиям с постепенным увеличением. Дни отдыха не обнуляют прогресс. Не повышай нагрузку ради игры в ущерб самочувствию.</p>'+
