@@ -65,6 +65,10 @@ assert.equal(medium.ctx.level(),1);
 medium.complete(22);
 assert.equal(medium.ctx.level(),2,'23 moderate workouts unlock Fighter');
 assert.ok(medium.state.xp>=2400);
+medium.state.ex=[{id:'easy',name:'Отжимания',kind:'Повторения',amount:10,sets:2}];
+for(let i=23;i<30;i++)medium.complete(i);
+assert.equal(medium.ctx.level(),2,'rank already earned never regresses after easier workouts');
+assert.equal(medium.state.highestRank,2,'unlocked rank stored persistently');
 
 const hard=game();
 hard.state.ex=Array.from({length:5},(_,i)=>({id:'ex'+i,name:'Упражнение '+i,kind:'Повторения',amount:20,sets:3}));
