@@ -4,59 +4,54 @@ let todayStr='2026-11-11';
 const state={xp:0,view:'hero',previewStage:0,ex:[
  {id:'a',name:'Отжимания',kind:'Повторения',amount:15,sets:2,weight:0}
 ],done:{},finished:{},trainingHistory:{},baselineLoads:[],dayXp:{}};
-const dom={modal:{innerHTML:''},musicStrip:{innerHTML:''}};
-const listeners={};
-let level=()=>1;
+const dom={modal:{innerHTML:''},musicStrip:{innerHTML:''}},listeners={};
 const ctx={
- window:{},state,console,Math,Date,Number,JSON,
- level,stage:()=>1,ranks:['','Новичок','Боец','Воин','Батыр','Легенда'],
+ window:{},state,console,Math,Date,Number,JSON,Set,
+ level:()=>1,stage:()=>1,ranks:['','Новичок','Боец','Воин','Батыр','Легенда'],
  mainHero:()=>'<section class="v9-panel v9-next-rank"></section>',
- workout:()=>'<div class="v9-exercises"></div>',
- progressScreen:()=>'',reward:()=>'<div class="v9-reward-progress"></div>',
+ workout:()=>'<div class="v9-exercises"></div>',progressScreen:()=>'',reward:()=>'<div class="v9-reward-progress"></div>',
  heroIndex:()=>0,render(){},save(){},badge(){},btn:()=>'',esc:String,
  today:()=>todayStr,doneKey:(x,i)=>todayStr+'/'+x.id+'/'+i,
  isDone:(x,i)=>!!state.done[todayStr+'/'+x.id+'/'+i],
  setsTotal:()=>state.ex.reduce((n,x)=>n+x.sets,0),
  setsDone:()=>state.ex.reduce((n,x)=>n+Array.from({length:x.sets},(_,i)=>!!state.done[todayStr+'/'+x.id+'/'+(i+1)]).filter(Boolean).length,0),
- document:{
-   getElementById:id=>dom[id]||null,
-   addEventListener:(event,handler)=>listeners[event]=handler
- }
+ document:{getElementById:id=>dom[id]||null,addEventListener:(event,handler)=>listeners[event]=handler}
 };
 vm.createContext(ctx);
-for(const file of ['v07.js','v12.js']){
- vm.runInContext(fs.readFileSync('app/src/main/assets/'+file,'utf8'),ctx);
-}
+for(const file of ['v07.js','v12.js'])vm.runInContext(fs.readFileSync('app/src/main/assets/'+file,'utf8'),ctx);
 const model=ctx.window.BATYR_XP_GUIDE.getModel;
-const earn=ctx.window.BATYR_XP_GUIDE.formulaText;
-assert.equal(earn(30).earned,27);
-assert.equal(earn(30).bonus,3);
-assert.equal(earn(0).earned,24);
-assert.equal(earn(500).earned,38);
+const breakdown=ctx.window.BATYR_XP_GUIDE.formulaText;
+assert.equal(breakdown(30,1).earned,51);
+assert.equal(breakdown(30,1).base,30);
+assert.equal(breakdown(30,1).effort,21);
+assert.equal(breakdown(30,1).variety,0);
+assert.equal(breakdown(100,5).earned,120);
+assert.equal(breakdown(300,5).earned,240);
 assert.equal(model().next,2);
-assert.equal(model().xpNeeded,66);
-assert.equal(model().sessionsNeeded,2);
-assert.equal(model().missingXP,66);
-assert.equal(model().forecast,3,"three 25-XP complete sessions assuming target load");
-assert.match(ctx.mainHero(),/Ориентировочно ещё 3/);
-assert.match(ctx.mainHero(),/Личная нагрузка/);
-assert.match(ctx.workout(),/\+27 XP/,"complete planned 30-rep session forecasts 27 XP");
-assert.match(ctx.workout(),/24 XP за тренировку/);
-state.done[todayStr+'/a/1']=true;state.done[todayStr+'/a/2']=true;
+assert.equal(model().xpNeeded,2400);
+assert.equal(model().sessionsNeeded,10);
+assert.equal(model().missingXP,2400);
+assert.equal(model().forecast,48,'light 2x15 workout requires 48 sessions');
+assert.match(ctx.mainHero(),/Ориентировочно ещё 48/);
+assert.match(ctx.mainHero(),/Боец/);
+assert.match(ctx.workout(),/\+51 XP/);
+assert.match(ctx.workout(),/Базовый XP/);
+assert.match(ctx.workout(),/За разные упражнения/);
+state.done[todayStr+'/a/1']=true;
+state.done[todayStr+'/a/2']=true;
 ctx.finish();
-assert.equal(state.xp,27);
-assert.equal(model().missingXP,39);
-assert.equal(model().missingSessions,1);
-assert.equal(model().missingPasses,2,"personal target rises after initial baseline is established");
-assert.match(ctx.reward(),/Бонус за 30.0 балла нагрузки/);
-assert.match(ctx.reward(),/\+3 XP/);
+assert.equal(state.xp,51);
+assert.equal(model().missingXP,2349);
+assert.equal(model().missingSessions,9);
+assert.equal(model().missingPasses,1);
+assert.match(ctx.reward(),/За 30.0 балла нагрузки/);
+assert.match(ctx.reward(),/\+21 XP/);
 assert.match(ctx.workout(),/Уже начислено сегодня/);
 ctx.finish();
-assert.equal(state.xp,27,"No duplicate XP");
-ctx.window.BATYR_XP_GUIDE.getModel();
-state.trainingHistory[todayStr].load=30;
-assert.equal(model().forecast,2);
+assert.equal(state.xp,51,'same day cannot earn twice');
+assert.equal(model().forecast,47);
 listeners.click({target:{closest:()=>({dataset:{action:'xp12-explain'}})},preventDefault(){},stopPropagation(){}});
 assert.match(dom.modal.innerHTML,/Как начисляются XP/);
-assert.match(dom.modal.innerHTML,/повтор = 1 балл/);
-console.log('PASS XP guide: formula, max cap, countdown by XP / sessions / load, real workout and reward detail');
+assert.match(dom.modal.innerHTML,/3 × 10 отжиманий/);
+assert.match(dom.modal.innerHTML,/Максимум \+240 XP/);
+console.log('PASS: long-term stage thresholds, low/medium/high effort XP, accurate forecast and per-session breakdown.');
