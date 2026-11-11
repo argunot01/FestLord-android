@@ -38,6 +38,8 @@ jobs:
           node --check app/src/main/assets/v08.js
           node --check app/src/main/assets/v09.js
           node --check app/src/main/assets/v10.js
+          node --check app/src/main/assets/v11.js
+          node tests/attributes.test.js
           node tests/full_player.test.js
           node tests/music.test.js
           node tests/progression.test.js
@@ -53,6 +55,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: BatyrsWay-v1.0-test-APK
+          name: BatyrsWay-v1.1-test-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
