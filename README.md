@@ -2,12 +2,15 @@
 
 Android fitness RPG with a steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## v1.0
+## v1.1
 - Interactive, image-rich game UI matching the approved mobile layout: bright Kazakh-steppe photographs, yurt, mountains, five character chapters, gold-framed navigation, workout cards, focused exercise, and reward screen.
 - Five separate full-scene progression illustrations cropped from the approved art. The Legend portrait visibly includes its gray wolf. New vivid scene art is in `app/src/main/assets/scenes/`.
 - Restyled interactive hero overview, step-aware workout list and progress, single-exercise session display, and XP reward page. Music library and level qualifications remain in place.
 - Five distinct 400×600 original Kazakh warrior illustrations packaged as local WebP assets, including the Legend with a wolf. These replace the placeholder portraits.
 - Home screen with character art, selectable progression chapters, rank, XP bar, and game attributes.
+- **Skill-specific progression:** strength, endurance, resilience and energy now use logged exercise categories and completed sets, rather than increasing uniformly from XP. Strength from resistance/body-weight exercises; endurance from cardio; resilience from static holds plus small regularity bonus; energy is a small gamified consistency/balance attribute, not a biological measure.
+- Automatic exercise classification with explicit override in exercise editor (strength / cardio / stability / mixed); records are snapshotted at workout completion and the reward screen shows real earned skill points. Archived pre-v1.1 workouts without category data are retained but not guessed or retroactively assigned to a category.
+- A 14-day category balance display encourages variety without requiring unsafe volume or punishing rest days.
 - Five approved chapters: Новичок (1–10), Боец (11–25), Воин (26–50), Батыр (51–75), Легенда (76–100). Athlete and anime character selection is removed; five fully original, cohesive Turkic-hero artworks are still planned.
 - Illustrated, lightweight loop animations for pushups, squats, pullups, walks and other exercises (schematics only).
 - Seven-day visual activity log and daily workout summary.
