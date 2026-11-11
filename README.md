@@ -10,12 +10,12 @@ Android fitness RPG with a steppe-inspired design: a lean beginner grows into a 
 - Illustrated, lightweight loop animations for pushups, squats, pullups, walks and other exercises (schematics only).
 - Seven-day visual activity log and daily workout summary.
 - Level-specific passing score: XP threshold, number of **meaningful sessions**, and repeated personal workload target.
-- Progressive level checks are tied to a 3-session baseline (repeatable strength/endurance effort), with a gentle 0.6% average workload improvement per level; no level unlock from one push-up per day.
+- Progressive level checks are tied to a 3-session baseline (repeatable strength/endurance effort), with a gentle 0.6% relative workload increase per level plus minimum load by rank (12/20/30/45/60); no level unlock from one push-up per day.
 - Meaningful workout: at least two sets and at least 12 workout-load points, or at least 10 minutes of cardio (including walking). Only one qualified training session can grant XP per day.
 - New deterministic Node regression tests in `tests/progression.test.js`.
 - Unverified pre-v0.7 XP remains stored, but old checkboxes are not automatically treated as qualifying workout history.
 - Custom workout editor: user-created exercise name, repetitions or seconds, sets, equipment weight.
-- Mark individual sets, count repetitions in focus mode, earn XP once per set, and finish a daily workout for a bonus.
+- Mark individual sets, count repetitions in focus mode, then earn XP for a meaningful completed workout once per day (no individual checkbox XP).
 - Reward screen and optional local audio file playback, plus direct HTTPS music streams.
 - Keeps data on-device in WebView localStorage; first launch imports previous v0.4 SharedPreferences exercises, XP and goals.
 
