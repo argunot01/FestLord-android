@@ -1,0 +1,52 @@
+
+/* RPG polish v0.6 */
+.rpg-heading{display:flex;align-items:center;justify-content:space-between;color:#e4b66f;font-size:11px;font-weight:900;letter-spacing:1.3px;padding:10px 2px 7px}
+.rpg-chapters{display:flex;gap:5px;margin:0 0 11px}
+.rpg-chapter{appearance:none;min-width:0;flex:1;border:1px solid #57462d;border-radius:9px;background:linear-gradient(145deg,#22252e,#141820);color:#b8afa3;padding:7px 1px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.rpg-chapter b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1px solid #80653e;font-size:12px}
+.rpg-chapter span{font-size:10px;letter-spacing:-.35px;white-space:nowrap}
+.rpg-chapter.selected{background:linear-gradient(160deg,#64472d,#201c1e);box-shadow:inset 0 0 0 1px #e2b95a,0 0 14px #a86d284d;color:#ffdf99}
+.rpg-chapter.unlocked b{background:#af854b;color:#11151b}
+.rpg-scene{box-shadow:0 12px 28px #000b,inset 0 0 35px #17100640}
+.rpg-scene .rpg-stars{position:absolute;inset:0;background-image:radial-gradient(circle,#ffe0a4 1px,transparent 1.6px),radial-gradient(circle,#efc27e 1px,transparent 1.6px);background-size:53px 71px,89px 122px;background-position:7px 11px,30px 53px;opacity:.16;z-index:0}
+.rpg-scene .rpg-sun{position:absolute;right:11%;top:15%;width:112px;height:112px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f9e7bc,#e0ab69 48%,#7d513899 67%,transparent 70%);box-shadow:0 0 40px #e5aa6e50;opacity:.5}
+.rpg-scene .heroArtwork{z-index:2;animation:rpg-arrive .55s ease both}
+.chapter-notice{background:#33251bd9;border:1px solid #78613d;border-radius:9px;text-align:center;font-size:11px;padding:7px;margin-top:8px;color:#ffcf86}
+.chapter-notice.live{background:#14261ddd;border-color:#507355;color:#abd78b}
+.rpg-workout-summary{display:flex;gap:8px;margin:10px 0 15px}
+.rpg-workout-summary>div{flex:1;text-align:center;background:linear-gradient(150deg,#2a2523,#141820);border:1px solid #6b5338;padding:10px 3px;border-radius:11px}
+.rpg-workout-summary strong{color:#f5d184;font-size:21px;display:block}
+.rpg-workout-summary small{display:block;color:#aba7a4;font-size:10px}
+.rpg-gallery h2{margin-top:5px}
+.rpg-gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.gallery-item{border:1px solid #6b563b;background:linear-gradient(180deg,#2c2b2c,#10151a);color:#eee1c7;border-radius:12px;padding:9px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.gallery-picture{width:100%;height:137px;border-radius:8px;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(ellipse at center,#4b3a2a,#14191f 65%)}
+.gallery-picture img{height:126px;width:100%;object-fit:contain;object-position:center bottom}
+.gallery-item.locked .gallery-picture img{filter:grayscale(1) brightness(.55)}
+.gallery-item.unlocked{border-color:#bb8f4c;box-shadow:inset 0 0 8px #ffd98a12}
+.gallery-item strong{font-size:13px}
+.gallery-item small{color:#b0a898;font-size:11px}
+.rpg-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin:12px 0}
+.rpg-day{display:flex;flex-direction:column;align-items:center;gap:7px;padding:9px 1px;border:1px solid #51473a;border-radius:9px;background:#181a1f}
+.rpg-day b{font-size:20px;color:#847e78}
+.rpg-day span,.rpg-day small{font-size:10px;color:#c5b9a5}
+.rpg-day.done{background:#283622;border-color:#94a85e}.rpg-day.done b{color:#b4d67b}
+.rpg-demo{height:224px!important;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;background:radial-gradient(ellipse at center,#503b2650,#0b1017 77%)!important;margin:12px 0!important;border:1px solid #514331}
+.rpg-demo figcaption{font-size:11px;color:#a69a86}
+.rpg-movement{width:100%;height:188px}
+.rpg-figure{fill:none;stroke:#f2cb83;stroke-width:11;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 3px 8px #ecaa4c80)}
+.rpg-figure circle{fill:#c99358;stroke:#f1d19e;stroke-width:5}
+.rpg-figure .rpg-bar{stroke:#c7c1ae;stroke-width:7}
+.rpg-floor{fill:none;stroke:#5d584f;stroke-width:3}
+.rpg-movement.pushup .rpg-moving{animation:rpg-pushup 2.3s ease-in-out infinite}
+.rpg-movement.squat .rpg-moving{animation:rpg-squat 2.3s ease-in-out infinite}
+.rpg-movement.pullup .rpg-moving{animation:rpg-pullup 2.5s ease-in-out infinite}
+.rpg-movement.walk .rpg-moving{animation:rpg-walk 1.2s ease-in-out infinite}
+.rpg-movement.strength .rpg-moving{animation:rpg-strength 1.8s ease-in-out infinite}
+@keyframes rpg-pushup{0%,100%{transform:translateY(0)}50%{transform:translateY(22px)}}
+@keyframes rpg-squat{0%,100%{transform:translateY(0) scaleY(1);transform-origin:center 170px}50%{transform:translateY(27px) scaleY(.76);transform-origin:center 170px}}
+@keyframes rpg-pullup{0%,100%{transform:translateY(8px)}50%{transform:translateY(-22px)}}
+@keyframes rpg-walk{0%,100%{transform:translateX(-12px)}50%{transform:translateX(12px)}}
+@keyframes rpg-strength{0%,100%{transform:translateY(4px)}50%{transform:translateY(-12px)}}
+@keyframes rpg-arrive{from{opacity:.5;filter:blur(4px)}to{opacity:1;filter:blur(0)}}
+@media(prefers-reduced-motion:reduce){.rpg-moving,.rpg-scene .heroArtwork{animation:none!important}}
