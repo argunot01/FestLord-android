@@ -16,8 +16,8 @@
   const mark=ok=>'<span class="xp12-mark '+(ok?'ready':'pending')+'">'+(ok?'✓':'•')+'</span>';
   const icons=['⭐','📅','⚔'];
   function getModel(){
-    const lvl=level(),maxLevel=lvl>=100;
-    const next=maxLevel?100:lvl+1;
+    const lvl=level(),maxLevel=lvl>=5;
+    const next=maxLevel?5:lvl+1;
     const xpNeeded=engine.levelXP(next);
     const sessionsNeeded=engine.requiredSessions(next);
     const sessions=engine.completedSessions();
@@ -28,14 +28,16 @@
     const missingPasses=Math.max(0,2-passes);
     const validLoads=engine.history().slice(0,6).map(([,record])=>Number(record.load)>=loadTarget).reverse();
     const recentRewards=engine.history().slice(0,5).map(([,record])=>Number(record.earned)).filter(v=>Number.isFinite(v)&&v>0);
-    const expectedAtTarget=engine.earnedForLoad(loadTarget);
+    const plan=engine.workoutLoad(()=>true);
+    const expectedAtTarget=engine.earnedForLoad(
+      Math.max(loadTarget,engine.meaningful(plan)?plan.load:100),Math.max(1,plan.exerciseCount||2));
     const typicalXP=recentRewards.length
       ?Math.max(expectedAtTarget,Math.round(recentRewards.reduce((a,b)=>a+b,0)/recentRewards.length))
       :expectedAtTarget;
     // Estimate by simulating future QUALIFIED workouts which reach the current
     // threshold, with one XP reward per calendar day. This is NOT a promise.
     let forecast=0,simXP=state.xp,simSessions=sessions,simLoad=validLoads.slice();
-    while(!maxLevel && forecast<500 && !(simXP>=xpNeeded && simSessions>=sessionsNeeded
+    while(!maxLevel && forecast<5000 && !(simXP>=xpNeeded && simSessions>=sessionsNeeded
        && simLoad.filter(Boolean).length>=2)){
       forecast++;
       simXP+=typicalXP;
@@ -60,7 +62,7 @@
   function card() {
     const p=getModel();
     if(p.maxLevel)return '<section class="xp12-card"><div class="xp12-kicker">ПУТЬ БАТЫРА</div>'+
-      '<h2>🏆 Уровень 100 достигнут!</h2><p>Легендарный уровень открыт. Продолжай тренироваться в своём темпе.</p></section>';
+      '<h2>🏆 Ты стал Легендой!</h2><p>Легендарный уровень открыт. Продолжай тренироваться в своём темпе.</p></section>';
     const steps=[
       gate('Опыт XP',nice(state.xp)+' / '+nice(p.xpNeeded),
         'Осталось '+nice(p.missingXP)+' XP',p.xpOK,'XP за полноценные тренировки'),
@@ -72,7 +74,7 @@
     ].join("");
     return '<section class="xp12-card" id="xp12-guide">'+
       '<div class="xp12-kicker">ТВОЁ СЛЕДУЮЩЕЕ ИСПЫТАНИЕ</div>'+
-      '<div class="xp12-title-row"><h2>До уровня '+p.next+'</h2><b>'+p.xpProgress.toFixed(0)+'% XP</b></div>'+
+      '<div class="xp12-title-row"><h2>До этапа '+p.next+' — '+ranks[p.next]+'</h2><b>'+p.xpProgress.toFixed(0)+'% XP</b></div>'+
       bar(p.xpProgress)+
       '<div class="xp12-forecast"><span class="xp12-forecast-symbol">⚔</span><div>'+
       '<strong>Ориентировочно ещё '+nice(p.forecast)+' '+(p.forecast===1?'тренировка':(p.forecast%10>=2&&p.forecast%10<=4&&p.forecast%100!==12&&p.forecast%100!==13&&p.forecast%100!==14?'тренировки':'тренировок'))+'</strong>'+
@@ -83,18 +85,14 @@
       '<p class="xp12-fine">Нужны все три условия одновременно. Дни отдыха не штрафуются. Нажатия на галочки сами по себе XP не дают.</p>'+
       '</section>';
   }
-  function formulaText(load){
-    const earned=engine.earnedForLoad(load);
-    const bonus=Math.max(0,earned-24);
-    return {earned,bonus};
-  }
+  function formulaText(load,count=1){return engine.xpBreakdown(load,count);}
   function makeWorkoutHint(){
     const planned=engine.workoutLoad(()=>true);
     const completed=engine.workoutLoad();
     const qualified=engine.meaningful(planned);
     const fullDone=state.ex.length>0 && setsTotal()===setsDone();
     const already=Boolean(state.finished[today()]||state.trainingHistory[today()]);
-    const reward=formulaText(planned.load);
+    const reward=formulaText(planned.load,planned.exerciseCount);
     const p=getModel();
     const warn=already?'Сегодня полноценная тренировка уже засчитана.':
       !state.ex.length?'Добавь упражнения, чтобы увидеть ожидаемую награду.':
@@ -104,8 +102,8 @@
     return '<section class="xp12-workout"><div class="xp12-kicker">НАГРАДА ЗА ТВОЙ ПЛАН</div>'+
       '<div class="xp12-estimate"><strong>'+(already||!qualified?'0':'+'+nice(reward.earned))+
       ' XP</strong><span>'+(already?'Уже начислено сегодня':qualified?'За полное выполнение':'Нужна полноценная тренировка')+'</span></div>'+
-      '<div class="xp12-workout-row"><span>24 XP за тренировку</span><b>'+(qualified?'+24':'—')+'</b></div>'+
-      '<div class="xp12-workout-row"><span>Бонус за нагрузку ('+planned.load.toFixed(1)+' балла)</span><b>'+(qualified?'+'+reward.bonus:'—')+'</b></div>'+
+      '<div class="xp12-workout-row"><span>Базовый XP за полноценную тренировку</span><b>'+(qualified?'+30':'—')+'</b></div>'+
+      '<div class="xp12-workout-row"><span>За нагрузку ('+planned.load.toFixed(1)+' балла)</span><b>'+(qualified?'+'+reward.effort:'—')+'</b></div>'+ '<div class="xp12-workout-row"><span>За разные упражнения ('+planned.exerciseCount+')</span><b>'+(qualified?'+'+reward.variety:'—')+'</b></div>'+
       '<div class="xp12-workout-row"><span>Сделано сейчас</span><b>'+completed.load.toFixed(1)+' балла</b></div>'+
       '<p>'+warn+'</p>'+
       '<button class="xp12-why" data-action="xp12-explain">Почему именно столько XP?</button>'+
@@ -116,14 +114,14 @@
     document.getElementById("modal").innerHTML='<div class="overlay" id="overlay">'+
       '<div class="dialog xp12-dialog"><div class="xp12-kicker">ПРАВИЛА BATYR’S WAY</div>'+
       '<h2>Как начисляются XP?</h2>'+
-      '<p><b>+24 XP</b> — за полноценную завершённую тренировку.</p>'+
-      '<p><b>+1 XP</b> — за каждые 10 полных баллов нагрузки, но не более +14 XP бонуса.</p>'+
-      '<p><b>Максимум +38 XP за день</b>. За галочки и отдельные упражнения XP не начисляются.</p>'+
+      '<p><b>+30 XP</b> — за полноценную завершённую тренировку.</p>'+
+      '<p><b>+0,7 XP</b> за балл нагрузки (бонус округляется вниз) и <b>+5 XP</b> за каждое дополнительное отличающееся упражнение, максимум +20 XP за разнообразие.</p>'+
+      '<p><b>Максимум +240 XP за день</b>. За галочки и отдельные упражнения XP не начисляются. Дни отдыха не обнуляют прогресс.</p>'+
       '<h3>Как считаются баллы нагрузки?</h3>'+
       '<div class="xp12-examples"><div>Отжимания, жим и другие повторения <b>1 повтор = 1 балл</b></div>'+
-      '<div>Ходьба и кардио <b>30 секунд = 1 балл</b></div>'+
+      '<div>Ходьба и кардио <b>20 секунд = 1 балл</b></div>'+
       '<div>Планка и статические удержания <b>7,5 секунд = 1 балл</b></div></div>'+
-      '<p class="small">Пример: 3 × 10 отжиманий = 30 баллов нагрузки, значит +24 базовых XP +3 бонусных = <b>27 XP</b>.</p>'+
+      '<p class="small">Пример: 3 × 10 отжиманий = 30 баллов нагрузки, значит +30 базовых XP +21 за объём = <b>51 XP</b>. Два разных упражнения дают ещё +5 XP.</p>'+
       '<h3>XP и характеристики — разные баллы</h3>'+
       '<p>XP приближают новый уровень. Сила, выносливость и стойкость растут отдельно — от типа упражнений. Баллы нагрузки нужны, чтобы подтвердить достаточное тренировочное усилие.</p>'+
       '<h3>Когда растёт уровень?</h3>'+
@@ -154,11 +152,11 @@
     const html=oldReward();
     const r=state.lastReward;
     if(!r)return html;
-    const bonus=Math.max(0,r.gained-24);
+    const parts=r.xpParts||formulaText(r.load,r.exerciseCount||1);
     const content='<div class="xp12-reward-detail">'+
-      '<div>Награда за полноценную тренировку <b>+24 XP</b></div>'+
-      '<div>Бонус за '+Number(r.load||0).toFixed(1)+' балла нагрузки <b>+'+bonus+' XP</b></div>'+
-      '<p>Чтобы получить новый уровень, также проверь условия в разделе «Прогресс».</p></div>';
+      '<div>Награда за полноценную тренировку <b>+'+parts.base+' XP</b></div>'+
+      '<div>За '+Number(r.load||0).toFixed(1)+' балла нагрузки <b>+'+parts.effort+' XP</b></div>'+ '<div>За разнообразие упражнений <b>+'+parts.variety+' XP</b></div>'+
+      '<p>Для нового этапа также нужны подтверждённые тренировки и личная нагрузка. Усиливай план постепенно и учитывай отдых.</p></div>';
     const at=html.indexOf('<div class="v9-reward-progress">');
     return at<0?html+content:html.slice(0,at)+content+html.slice(at);
   };
