@@ -63,3 +63,15 @@ main{padding:0 14px 24px}
 .nav{background:linear-gradient(180deg,#20252d,#111720);border-top:1px solid #806240;padding:7px 2px max(7px,env(safe-area-inset-bottom))}.nav button{font-size:10px}.nav button i{font-size:23px;color:#d4c8ab}.nav button.active{color:#ffe19c}.nav button.active i{color:#ffd073;filter:drop-shadow(0 0 6px #ffc8658c)}
 .btn{background:linear-gradient(180deg,#ffe09a,#bf8639);border:1px solid #f5c878}.card{background:linear-gradient(140deg,#2b2728,#151b22);border-color:#77603e}.card h2,.title{color:#f0c877}.ml-play{background:linear-gradient(145deg,#ffe3a2,#b78334)}
 @media(max-width:380px){.v9-hero-stage{height:535px}.v9-stage-art{height:89%;max-width:79%}.v9-hero-stats{width:112px}.v9-action{min-height:79px}.v9-action span{font-size:26px}.v9-action small{font-size:9px}.v9-ex-visual{width:48px}.v9-chapter b{font-size:9px}}
+/* 0.9.1 refinements: whole exercise demonstrator visible, controls on smaller screens. */
+.v9-session-figure{height:223px;background:radial-gradient(ellipse at 50% 55%,#47392c,#151820 78%)}
+.v9-action-illustration{object-fit:contain}
+.v9-session-steps{margin:4px 0 14px}
+.v9-session-main h2{margin:8px 0 0;font-size:25px}
+.v9-session-target{margin:0 0 11px;font-size:20px}
+.v9-session-counter{font-size:49px;margin:9px 0 3px}
+.v9-session-counter span{font-size:35px}
+.v9-counter-actions{margin:9px 0}
+.v9-session-controls{margin:13px 0 9px}
+.v9-stage-back{filter:blur(16px) saturate(1.10) brightness(.60)}
+@media(max-height:800px){.v9-session-figure{height:198px}.v9-session-main h2{font-size:24px}.v9-session-steps{margin-bottom:7px}}
