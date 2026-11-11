@@ -2,8 +2,10 @@
 
 Android fitness RPG with a steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## v0.8
-- Redesigned game-style UI: five progression chapters, atmospheric mountains, yurt, wolf, black-and-gold interface.
+## v0.9
+- Interactive, image-rich game UI matching the approved mobile layout: bright Kazakh-steppe photographs, yurt, mountains, five character chapters, gold-framed navigation, workout cards, focused exercise, and reward screen.
+- Five separate full-scene progression illustrations cropped from the approved art. The Legend portrait visibly includes its gray wolf. New vivid scene art is in `app/src/main/assets/scenes/`.
+- Restyled interactive hero overview, step-aware workout list and progress, single-exercise session display, and XP reward page. Music library and level qualifications remain in place.
 - Five distinct 400×600 original Kazakh warrior illustrations packaged as local WebP assets, including the Legend with a wolf. These replace the placeholder portraits.
 - Home screen with character art, selectable progression chapters, rank, XP bar, and game attributes.
 - Five approved chapters: Новичок (1–10), Боец (11–25), Воин (26–50), Батыр (51–75), Легенда (76–100). Athlete and anime character selection is removed; five fully original, cohesive Turkic-hero artworks are still planned.
