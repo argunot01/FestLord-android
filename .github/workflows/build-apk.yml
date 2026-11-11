@@ -35,6 +35,7 @@ jobs:
         run: |
           node --check app/src/main/assets/v06.js
           node --check app/src/main/assets/v07.js
+          node --check app/src/main/assets/v08.js
           node tests/progression.test.js
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
@@ -48,6 +49,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: BatyrsWay-v0.7-test-APK
+          name: BatyrsWay-v0.8-test-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
