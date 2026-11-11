@@ -1,9 +1,9 @@
 /* Batyr's Way v0.6 visual and workout UX extension — standalone and offline. */
 (function(){
   'use strict';
-  const stageNames=['','Новичок','Развитие','Сила','Атлет','Легенда'];
+  const stageNames=['','Новичок','Боец','Воин','Батыр','Легенда'];
   const stageRanges=['','1–10','11–25','26–50','51–75','76–100'];
-  const stagePics=[0,1,2,3,3];
+  const stagePics=[0,1,3,3,3];
 
   function artFor(n) { return HERO_IMAGES[stagePics[n-1]]; }
   function milestones() {
