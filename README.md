@@ -16,7 +16,7 @@ Android fitness RPG with a steppe-inspired design: a lean beginner grows into a 
 - Seven-day visual activity log and daily workout summary.
 - Level-specific passing score: XP threshold, number of **meaningful sessions**, and repeated personal workload target.
 - Progressive level checks are tied to a 3-session baseline (repeatable strength/endurance effort), with a gentle 0.6% relative workload increase per level plus minimum load by rank (12/20/30/45/60); no level unlock from one push-up per day.
-- Meaningful workout: at least two sets and at least 12 workout-load points, or at least 10 minutes of cardio (including walking). Only one qualified training session can grant XP per day.
+- Meaningful workout: at least two sets and 12 game workload points, OR two or more sets totaling 90 seconds of static holds, OR at least 10 minutes of cardio (including walking). Static minutes use a different workload conversion so manageable beginner holds can contribute fairly to resilience. One qualifying training session can grant XP and game attributes each day.
 - New deterministic Node regression tests in `tests/progression.test.js`.
 - Unverified pre-v0.7 XP remains stored, but old checkboxes are not automatically treated as qualifying workout history.
 - Custom workout editor: user-created exercise name, repetitions or seconds, sets, equipment weight.
