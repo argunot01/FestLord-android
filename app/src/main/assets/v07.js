@@ -17,7 +17,7 @@
   // One unique game character throughout; no separate athlete/anime selection.
   heroIndex = function () {
     const n = state.previewStage || stage();
-    return [0, 0, 1, 3, 3, 3][Math.max(1, Math.min(5, n))];
+    return [0, 0, 1, 2, 3, 4][Math.max(1, Math.min(5, n))];
   };
 
   const levelXP = n => {
