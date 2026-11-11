@@ -36,6 +36,7 @@ jobs:
           node --check app/src/main/assets/v06.js
           node --check app/src/main/assets/v07.js
           node --check app/src/main/assets/v08.js
+          node tests/music.test.js
           node tests/progression.test.js
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
