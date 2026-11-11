@@ -1,0 +1,22 @@
+
+/* Music library v0.8, consistent with Batyr's Way gold-on-charcoal RPG theme */
+.ml-feature{background:linear-gradient(135deg,#29241f,#171b24 58%);border-color:#ab8148;box-shadow:0 7px 22px #0007}
+.ml-feature h2{font-size:20px}
+.ml-feature p{line-height:1.5;margin-bottom:17px}
+.ml-status{color:#a9c891;font-size:12px;margin-top:12px;min-height:18px}
+.ml-status.ml-error{color:#e5a18e}
+.ml-title{display:flex;align-items:center;justify-content:space-between}
+.ml-title span{font-size:24px;color:#e8bb66}
+.ml-list{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.ml-track{border:1px solid #5d4d37;border-radius:12px;display:flex;align-items:center;gap:8px;padding:9px 8px;background:linear-gradient(140deg,#26282b,#161b23);min-height:68px}
+.ml-play{background:linear-gradient(150deg,#ffdda1,#c58b3b);border:1px solid #ffd888;color:#242018;font-size:18px;min-width:39px;height:39px;border-radius:50%;cursor:pointer}
+.ml-track-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ml-track-info strong{color:#f4ede1;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-track-info small{color:#a9abb0;font-size:10px}
+.ml-icon{font-size:19px;background:#24272a;border:1px solid #584b3a;color:#e9c480;border-radius:9px;min-width:33px;min-height:36px;cursor:pointer}
+.ml-icon.ml-delete{color:#f0a398}
+.ml-empty{text-align:center;color:#c5bdaf;padding:28px 12px;line-height:1.5}
+.ml-empty p{font-size:12px;margin-top:7px}
+.ml-mini{display:flex;align-items:center;padding:10px 13px;gap:10px;background:#28221b;border-top:1px solid #a77d42}
+.ml-now{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f0d8a5}
+.ml-mini button{border:1px solid #bd9455;border-radius:8px;color:#f8d68a;background:#22252b;min-width:33px;min-height:33px}
