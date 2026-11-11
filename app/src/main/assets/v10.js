@@ -244,10 +244,8 @@
   player.onloadedmetadata=()=>{duration=Number.isFinite(player.duration)?player.duration:0;paintTime();};
   // Android reports positions on the activity UI thread; do not access MediaPlayer from the WebView bridge thread.
   setInterval(()=>{if(native && id && typeof NativeMusic.requestPosition==="function")NativeMusic.requestPosition();},800);
-  const oldNative=window.BatyrMusic && window.BatyrMusic.onNativeEvent;
   window.BatyrMusic=window.BatyrMusic||{};
   window.BatyrMusic.onNativeEvent=function(event,detail){
-    if(oldNative && !["stopped","finished"].includes(event))oldNative(event,detail);
     if(event==="position"){
       try{
         const p=JSON.parse(detail);
