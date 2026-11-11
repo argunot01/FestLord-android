@@ -2,7 +2,7 @@
 
 Android fitness RPG with a steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## v1.1
+## v1.2
 - Interactive, image-rich game UI matching the approved mobile layout: bright Kazakh-steppe photographs, yurt, mountains, five character chapters, gold-framed navigation, workout cards, focused exercise, and reward screen.
 - Five separate full-scene progression illustrations cropped from the approved art. The Legend portrait visibly includes its gray wolf. New vivid scene art is in `app/src/main/assets/scenes/`.
 - Restyled interactive hero overview, step-aware workout list and progress, single-exercise session display, and XP reward page. Music library and level qualifications remain in place.
@@ -14,6 +14,9 @@ Android fitness RPG with a steppe-inspired design: a lean beginner grows into a 
 - Five approved chapters: Новичок (1–10), Боец (11–25), Воин (26–50), Батыр (51–75), Легенда (76–100). Athlete and anime character selection is removed; five fully original, cohesive Turkic-hero artworks are still planned.
 - Illustrated, lightweight loop animations for pushups, squats, pullups, walks and other exercises (schematics only).
 - Seven-day visual activity log and daily workout summary.
+- Clear next-level qualification card with real thresholds and missing XP, qualifying workout count, and minimum workload verified twice in the latest six sessions.
+- Display approximate **workouts remaining**, simulated from the exact gate thresholds with the assumption that the next sessions reach the current personalized workload goal. Estimates are not mandatory schedules; rest is never penalized.
+- Explain XP: full qualified workout +24 XP, plus +1 XP for each 10 workload points (maximum +14 load bonus, maximum 38 XP/day). Workout planner previews XP based on the full planned sets; reward screen shows actual split.
 - Level-specific passing score: XP threshold, number of **meaningful sessions**, and repeated personal workload target.
 - Progressive level checks are tied to a 3-session baseline (repeatable strength/endurance effort), with a gentle 0.6% relative workload increase per level plus minimum load by rank (12/20/30/45/60); no level unlock from one push-up per day.
 - Meaningful workout: at least two sets and 12 game workload points, OR two or more sets totaling 90 seconds of static holds, OR at least 10 minutes of cardio (including walking). Static minutes use a different workload conversion so manageable beginner holds can contribute fairly to resilience. One qualifying training session can grant XP and game attributes each day.
