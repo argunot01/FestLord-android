@@ -94,7 +94,7 @@
     return {earned,base,effort:Math.min(effort,earned-base),variety:Math.max(0,earned-base-Math.min(effort,earned-base)),limit:240};
   }
   function exam() {
-    const next = Math.min(100, level() + 1);
+    const next = Math.min(5, level() + 1);
     const recent = recentLoads();
     return {
       next, points: levelXP(next), sessions: requiredSessions(next),
