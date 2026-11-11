@@ -1,0 +1,52 @@
+/* Batyr's Way v1.0 — premium expandable music player, responsive mobile. */
+#musicStrip{z-index:35;position:relative}
+#musicStrip.p10-playing{border-top:1px solid #a77936;box-shadow:0 -7px 22px #0007}
+.p10-miniplayer{position:relative;display:flex;align-items:center;gap:6px;min-height:68px;padding:8px 10px 12px;background:linear-gradient(145deg,#2b271f,#141923 66%);border-top:1px solid #a67942}
+.p10-miniplayer button{appearance:none;border:0;background:transparent;color:#f2dbac;cursor:pointer}
+.p10-minimark{width:38px;height:38px;flex:none;border:1px solid #a87a3f!important;border-radius:11px!important;background:linear-gradient(150deg,#47371e,#25221d)!important;color:#ffcc65!important;font-size:23px}
+.p10-minititle{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:3px;padding-left:4px}
+.p10-minititle b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff1d7}
+.p10-minititle small{font-size:10px;color:#bfb5a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p10-miniaction{font-size:15px;min-width:27px;height:36px;font-weight:bold}
+.p10-miniaction.p10-gold{background:linear-gradient(150deg,#ffdc91,#c99641)!important;border-radius:50%!important;color:#241b0d!important;min-width:38px;height:38px}
+.p10-miniprogress{position:absolute;left:0;right:0;bottom:0;height:3px;background:#5b5041}
+.p10-miniprogress>div{height:100%;background:#facc71;box-shadow:0 0 8px #ffc85e}
+.p10-shade{position:fixed;inset:0;background:#030508c9;z-index:96}
+.p10-expanded{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,480px);max-height:94dvh;overflow:auto;overscroll-behavior:contain;z-index:97;border:1px solid #c1924e;border-bottom:0;border-radius:22px 22px 0 0;padding:7px 20px max(24px,env(safe-area-inset-bottom));color:#fcead0;background:linear-gradient(155deg,#303030 0%,#1c2028 38%,#0c111b 100%);box-shadow:0 -12px 56px #000c}
+.p10-handle{width:44px;height:4px;background:#a58452;border-radius:99px;margin:0 auto 13px}
+.p10-heading{display:flex;align-items:center;justify-content:space-between;letter-spacing:2px;font-size:11px;color:#ffd891}
+.p10-heading button{border:0;background:#33333b;color:#f3d49a;font-size:25px;width:38px;height:34px;border-radius:9px}
+.p10-art{height:210px;margin:20px auto 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px solid #ad8449;border-radius:17px;overflow:hidden;background:radial-gradient(circle at 50% 45%,#785932aa,#161b22 70%),url('scenes/legend.webp') center 26%/cover no-repeat;box-shadow:inset 0 0 70px #05060880,0 7px 23px #0007}
+.p10-notes{font-size:75px;color:#ffe19b;text-shadow:0 4px 22px #000c,0 0 18px #eea838}
+.p10-art small{letter-spacing:3px;color:#ffdc9c;font-size:11px;text-shadow:0 2px 6px #000}
+.p10-song{text-align:center;margin:7px 0 25px}
+.p10-song h2{font-size:21px;margin:0 0 6px;line-height:1.3}
+.p10-song p{margin:0;color:#b6ad9e;font-size:12px}
+.p10-seekbox{margin:12px 0 15px}
+#p10-seek{width:100%;accent-color:#ffce74;cursor:pointer;touch-action:pan-y}
+.p10-times{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums;color:#bfbaa9;font-size:12px;margin-top:2px}
+.p10-main-controls{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.p10-main-controls button{appearance:none;border:0;background:transparent;color:#e6d4b4;width:45px;height:49px;font-size:22px;cursor:pointer}
+.p10-main-controls button.selected{color:#ffd071}
+.p10-main-controls .p10-big-play{height:67px;width:67px;border-radius:50%;background:linear-gradient(160deg,#ffe6ac,#d8a151);color:#211809;font-size:28px;box-shadow:0 3px 19px #daa1435e}
+.p10-mode-text{text-align:center;color:#d1b88e;font-size:12px;padding:16px 0 10px}
+.p10-queue-link{display:block;width:100%;padding:12px;border:1px solid #776144;background:#292827;color:#f1c982;border-radius:12px;font-size:14px}
+.p10-feature{border-color:#aa8149!important;background:linear-gradient(125deg,#2e281f,#1b2029)!important}
+.p10-status{font-size:12px;color:#c3c09c;padding-top:13px;margin:0}
+.p10-status.error{color:#f1a392}
+.p10-list-head{display:flex;align-items:center;justify-content:space-between}
+.p10-list-head span{font-size:25px;color:#f3cc78}
+.p10-track{display:flex;align-items:center;gap:7px;min-height:66px;padding:9px 6px;margin:8px 0;background:linear-gradient(125deg,#262831,#151a21);border:1px solid #524435;border-radius:12px}
+.p10-track.active{border-color:#b89052;box-shadow:0 0 10px #e9a93c1e}
+.p10-track button{cursor:pointer;flex:none}
+.p10-track-play{height:39px;width:39px;border:1px solid #e4bc6c;background:linear-gradient(160deg,#ffdd96,#bb8a3d);color:#291d0c;border-radius:50%;font-size:19px}
+.p10-track-name{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.p10-track-name b{font-size:14px;color:#f1e5d1;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.p10-track-name small{color:#a4a6ae;font-size:10px}
+.p10-track-edit,.p10-track-delete{height:36px;width:32px;border-radius:9px;background:#21242a;border:1px solid #504334;color:#e5c280;font-size:19px}
+.p10-track-delete{color:#f0a39b}
+.p10-empty{text-align:center;font-size:14px;color:#d0c3ac;padding:30px 5px}
+.p10-empty p{font-size:12px}
+.p10-help p{line-height:1.5;color:#bfc0be}
+body.p10-sheet-visible{overflow:hidden}
+@media(max-height:650px){.p10-art{height:115px;margin:9px auto}.p10-notes{font-size:45px}.p10-song{margin:8px 0 12px}.p10-expanded{max-height:100dvh;padding-top:5px}}
