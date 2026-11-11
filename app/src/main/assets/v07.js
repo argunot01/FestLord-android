@@ -60,26 +60,31 @@
   };
 
   function workoutLoad() {
-    let sets = 0, reps = 0, seconds = 0, cardioSeconds = 0;
+    let sets = 0, reps = 0, seconds = 0, cardioSeconds = 0, stabilitySeconds = 0;
     state.ex.forEach(x => {
       for (let n = 1; n <= x.sets; n++) {
         if (!isDone(x, n)) continue;
         sets++;
         if (x.kind === "Секунды") {
           seconds += x.amount;
-          if (typeof window !== "undefined" && typeof window.BATYR_GET_CATEGORY === "function"
-            ? window.BATYR_GET_CATEGORY(x) === "cardio"
-            : /ходь|бег|вел|плаван|эллип|кардио|прогул|шаг|жүру|walking|cycling|run/i.test(x.name)) cardioSeconds += x.amount;
+          const className = typeof window !== "undefined" && typeof window.BATYR_GET_CATEGORY === "function"
+            ? window.BATYR_GET_CATEGORY(x)
+            : /ходь|бег|вел|плаван|эллип|кардио|прогул|шаг|жүру|walking|cycling|run/i.test(x.name)
+              ? "cardio" : /планк|удерж|статич|изометр/i.test(x.name) ? "stability" : "other";
+          if (className === "cardio") cardioSeconds += x.amount;
+          if (className === "stability") stabilitySeconds += x.amount;
         }
         else reps += x.amount;
       }
     });
     // Comparable in-app workload units. No bonus for selecting unsafe heavy weight.
-    const load = Math.round((reps + seconds / 30) * 10) / 10;
-    return {sets, reps, seconds, cardioSeconds, load};
+    const load = Math.round((reps + (seconds - stabilitySeconds) / 30 + stabilitySeconds / 7.5) * 10) / 10;
+    return {sets, reps, seconds, cardioSeconds, stabilitySeconds, load};
   }
   function meaningful(w) {
-    return (w.sets >= 2 && w.load >= 12) || (w.cardioSeconds >= 600 && w.load >= 12);
+    return (w.sets >= 2 && w.load >= 12) ||
+      (w.cardioSeconds >= 600 && w.load >= 12) ||
+      (w.sets >= 2 && w.stabilitySeconds >= 90);
   }
   function exam() {
     const next = Math.min(100, level() + 1);
@@ -113,7 +118,7 @@
     }
     const w = workoutLoad();
     if (!meaningful(w)) {
-      badge("Пока разминка: нужно 2 подхода и 12 баллов нагрузки или 10 минут кардио.");
+      badge("Пока разминка: 2 подхода и 12 баллов нагрузки, 90 сек статических удержаний либо 10 минут кардио.");
       return;
     }
 
@@ -122,7 +127,7 @@
     const statScore = typeof window !== "undefined" && typeof window.BATYR_SCORE_WORKOUT === "function"
       ? window.BATYR_SCORE_WORKOUT() : null;
     state.trainingHistory[date] = {load: w.load, sets: w.sets, reps: w.reps,
-      seconds: w.seconds, cardioSeconds: w.cardioSeconds, earned: gained, savedAt: Date.now(),
+      seconds: w.seconds, cardioSeconds: w.cardioSeconds, stabilitySeconds: w.stabilitySeconds, earned: gained, savedAt: Date.now(),
       statPoints: statScore ? statScore.points : null,
       statBreakdown: statScore ? statScore.breakdown : null,
       statExercises: statScore ? statScore.exercises : null};
@@ -180,7 +185,7 @@
     let hint;
     if (state.finished[today()]) hint = "Тренировка дня уже засчитана. Завтра можно продолжить.";
     else if (qualifies) hint = "Достаточная нагрузка: можно получить XP после завершения всех выбранных подходов.";
-    else hint = "Для полного зачёта: хотя бы 2 подхода и 12 баллов нагрузки либо 10 минут ходьбы или другого кардио.";
+    else hint = "Для полного зачёта: хотя бы 2 подхода и 12 баллов нагрузки либо 90 сек статических удержаний в двух подходах, либо 10 минут кардио.";
     const card = '<div class="card pass-card"><div class="caps">РЕАЛЬНАЯ НАГРУЗКА</div>' +
       '<div class="pass-row"><span>Выполнено подходов</span><b>'+w.sets+'</b></div>' +
       '<div class="pass-row"><span>Баллы нагрузки</span><b>'+w.load.toFixed(1)+'</b></div>' +
