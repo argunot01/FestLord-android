@@ -12,6 +12,25 @@
   const stageArt = n => (window.BATYR_STAGE_SCENES && window.BATYR_STAGE_SCENES[n-1]) || ('scenes/'+chapters[n-1].file+'.webp');
   const floor = x => Math.max(0,Math.min(100,x));
   const stageLevel = n=> n===1?1:n===2?11:n===3?26:n===4?51:76;
+  // Game attributes represent the development of the same hero, NOT medical
+  // measurement. Later stages have higher baseline values.
+  const statSteps=[
+    {lvl:1,s:[1,1,1,1]},
+    {lvl:11,s:[3,3,2,2]},
+    {lvl:26,s:[5,4,4,3]},
+    {lvl:51,s:[7,6,6,5]},
+    {lvl:76,s:[10,9,8,7]},
+    {lvl:100,s:[12,11,10,9]}
+  ];
+  const strengthAt=lvl=>{
+    const l=Math.max(1,Math.min(100,Number(lvl)||1));
+    let i=0;while(i<statSteps.length-2 && statSteps[i+1].lvl<=l)i++;
+    const a=statSteps[i],b=statSteps[i+1],t=Math.min(1,(l-a.lvl)/(b.lvl-a.lvl));
+    return a.s.map((v,k)=>Math.max(v,Math.floor(v+(b.s[k]-v)*t+0.0001)));
+  };
+  window.BATYR_STAGE_STATS=strengthAt;
+  const statMarkup=s=>stat('💪','Сила',s[0])+stat('♥','Выносливость',s[1])+stat('🛡','Стойкость',s[2])+stat('ϟ','Энергия',s[3]);
+
   const gameXP = n => {const s=n-1;return Math.ceil(65*s+0.5*s*s)};
   const nextXp = () => level()>=100? gameXP(100):gameXP(level()+1);
   function pct(){const cur=gameXP(level()),next=nextXp();return floor((state.xp-cur)/Math.max(1,next-cur)*100);}
@@ -30,20 +49,18 @@
   }
   function createHero(){
     const current=stage(),shown=state.previewStage||current,chapter=chapters[shown-1];
-    const lvl=level(),stepNotice=shown>current?'ПРЕДПРОСМОТР — ОТКРОЕТСЯ ПОЗЖЕ':'ТВОЙ ТЕКУЩИЙ ЭТАП';
+    const lvl=level(),future=shown>current,stepNotice=future?'ПРЕДПРОСМОТР · ОТКРОЕТСЯ С УРОВНЯ '+stageLevel(shown):'ТВОЙ ТЕКУЩИЙ ЭТАП';
+    const showAt=future?stageLevel(shown):lvl;
+    const shownStats=strengthAt(showAt);
     const stageImg=stageArt(shown);
     return chaptersPanel()+
       '<section class="v9-hero-stage">'+
         '<div class="v9-stage-back" style="background-image:url(\''+stageImg+'\')"></div>'+ 
         '<img class="v9-stage-art" src="'+stageImg+'" alt="'+esc(chapter.name)+' — казахский степной герой" loading="eager">'+
         '<div class="v9-stage-topline"><span class="v9-stage-ribbon">ЭТАП '+shown+' · '+chapter.name+'</span></div>'+ 
-        '<div class="v9-hero-level"><b>УР. '+lvl+'</b><span>'+state.xp+' / '+nextXp()+' XP</span>'+bar(pct())+'</div>'+ 
-        '<div class="v9-hero-stats">'+
-          stat('💪','Сила',1+Math.floor(state.xp/40))+
-          stat('♥','Выносливость',1+Math.floor(state.xp/55))+
-          stat('🛡','Стойкость',1+Math.floor(state.xp/80))+
-          stat('ϟ','Энергия',1+Math.floor(state.xp/60))+
-        '</div>'+ 
+        '<div class="v9-hero-level"><b>'+(future?'ЭТАП '+shown:'УР. '+lvl)+'</b><span>'+(future?'Уровни '+chapter.range:'XP '+state.xp+' / '+nextXp())+'</span>'+bar(future?0:pct())+
+          (future?'<small class="v10-current-lvl">Твой уровень: '+lvl+'</small>':'')+'</div>'+
+        '<div class="v9-hero-stats"><div class="v10-stat-caption">'+(future?'ПОКАЗАТЕЛИ ЭТАПА '+shown:'ТВОИ ХАРАКТЕРИСТИКИ')+'</div>'+statMarkup(shownStats)+'</div>'+ 
         '<div class="v9-landscape-label"><b>'+chapter.name+'</b><span>'+stepNotice+'</span></div>'+ 
         '<div class="v9-action-underlay">'+navTiles()+'</div>'+ 
       '</section>'+ 
@@ -52,7 +69,7 @@
         '<div class="v9-space-between"><span>Уровень '+lvl+'</span><strong>'+state.xp+' XP</strong><span>Уровень '+Math.min(100,lvl+1)+'</span></div>'+bar(pct())+ 
         '<p>Для развития нужны XP, регулярные полноценные тренировки и твоя индивидуальная нагрузка.</p></section>'+ 
       '<section class="v9-panel v9-stage-gallery"><div class="v9-panel-heading">5 ступеней батыра</div>'+ 
-        '<div class="v9-portrait-gallery">'+chapters.map((x,i)=>'<button data-action="preview:'+(i+1)+'" class="'+((i+1)===shown?'selected':'')+'"><img src="'+stageArt(i+1)+'" alt=""><b>'+x.name+'</b><small>Ур. '+x.range+'</small></button>').join('')+'</div></section>';
+        '<div class="v9-portrait-gallery">'+chapters.map((x,i)=>'<button data-action="preview:'+(i+1)+'" class="'+((i+1)===shown?'selected':'')+'"><img src="'+stageArt(i+1)+'" alt=""><b>'+x.name+'</b><small>Этап '+(i+1)+'</small><small>Ур. '+x.range+'</small></button>').join('')+'</div></section>';
   }
   mainHero=createHero;
 
@@ -118,11 +135,8 @@
     const r=state.lastReward||{gained:0,newLevel:level(),load:0,sessions:0,oldLevel:level()};
     return '<div class="v9-reward"><div class="v9-reward-head">Тренировка завершена!</div>'+ 
        '<div class="v9-laurels">❧ <b>+'+r.gained+' XP</b> ❧</div>'+ 
-       '<div class="v9-panel"><h3>Рост характеристик</h3>'+ 
-       stat('💪','Сила','+'+Math.max(1,Math.floor(r.gained/15)))+
-       stat('♥','Выносливость','+1')+
-       stat('🛡','Стойкость','+1')+
-       stat('ϟ','Энергия','+1')+'</div>'+ 
+       '<div class="v9-panel"><h3>Текущие характеристики героя</h3>'+statMarkup(strengthAt(level()))+
+       '<p class="v10-attrs-note">Показатели растут при повышении уровня; XP учитывается после зачтённой тренировки.</p></div>'+ 
        '<div class="v9-reward-progress"><div class="v9-space-between"><span>Уровень '+level()+'</span><b>'+state.xp+' XP</b><span>Уровень '+Math.min(100,level()+1)+'</span></div>'+bar(pct())+'</div>'+ 
        (r.newLevel>r.oldLevel?'<h3 class="v9-promotion">⚔ Новый уровень '+r.newLevel+'!</h3>':'<p class="v9-reward-note">Ты приблизился к следующему уровню.</p>')+
        '<div class="v9-loot-label">Награда за дисциплину</div><div class="v9-loot"><div>💧 <b>Энергия</b><small>Игровой бонус</small></div><div>🏅 <b>Опыт</b><small>+'+r.gained+' XP</small></div></div>'+ 
