@@ -1,0 +1,11 @@
+/* Batyr's Way v0.7: clear and achievable passing criteria */
+.pass-card,.pass-card p{line-height:1.5}
+.pass-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:11px 2px;border-bottom:1px solid #504532}
+.pass-row:last-of-type{border-bottom:none}
+.pass-row span{font-size:13px;color:#d0c5b5;flex:1}
+.pass-row b{font-size:13px;color:#ffd485;text-align:right}
+.reward-page{padding:45px 0 15px;text-align:center}
+.reward-symbol{font-size:64px;margin-bottom:14px}
+.reward-level{padding:14px;border:1px solid #cd9950;background:#322719;color:#ffe09c;border-radius:11px;margin:19px 0;font-size:17px;font-weight:800}
+.rpg-gallery .gallery-item.locked .gallery-picture img{opacity:.8}
+.rpg-workout-summary strong{font-variant-numeric:tabular-nums}
