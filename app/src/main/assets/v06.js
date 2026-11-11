@@ -3,7 +3,7 @@
   'use strict';
   const stageNames=['','Новичок','Боец','Воин','Батыр','Легенда'];
   const stageRanges=['','1–10','11–25','26–50','51–75','76–100'];
-  const stagePics=[0,1,3,3,3];
+  const stagePics=[0,1,2,3,4];
 
   function artFor(n) { return HERO_IMAGES[stagePics[n-1]]; }
   function milestones() {
