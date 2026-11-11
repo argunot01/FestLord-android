@@ -59,11 +59,11 @@
     return n <= 10 ? 1 : n <= 25 ? 2 : n <= 50 ? 3 : n <= 75 ? 4 : 5;
   };
 
-  function workoutLoad() {
+  function workoutLoad(check = isDone) {
     let sets = 0, reps = 0, seconds = 0, cardioSeconds = 0, stabilitySeconds = 0;
     state.ex.forEach(x => {
       for (let n = 1; n <= x.sets; n++) {
-        if (!isDone(x, n)) continue;
+        if (!check(x, n)) continue;
         sets++;
         if (x.kind === "Секунды") {
           seconds += x.amount;
@@ -93,6 +93,14 @@
       next, points: levelXP(next), sessions: requiredSessions(next),
       load: targetLoad(next), recent: recent.length,
       passes: loadPassCount(next), current: level()
+    };
+  }
+
+  if (typeof window !== "undefined") {
+    window.BATYR_LEVEL_ENGINE = {
+      levelXP, requiredSessions, history, completedSessions,
+      baseline, targetLoad, loadPassCount, workoutLoad, meaningful,
+      earnedForLoad: load => Math.min(38, 24 + Math.floor(Math.max(0,Number(load)||0)/10))
     };
   }
 
