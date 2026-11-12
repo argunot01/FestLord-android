@@ -150,6 +150,7 @@
     state.trainingHistory[date] = {load: w.load, exerciseCount: w.exerciseCount, sets: w.sets, reps: w.reps,
       seconds: w.seconds, cardioSeconds: w.cardioSeconds, stabilitySeconds: w.stabilitySeconds, earned: gained, savedAt: Date.now(),
       statPoints: statScore ? statScore.points : null,
+      statVersion: statScore ? statScore.version : null,
       statBreakdown: statScore ? statScore.breakdown : null,
       statExercises: statScore ? statScore.exercises : null};
     if (state.baselineLoads.length < 3) state.baselineLoads.push(w.load);
@@ -160,7 +161,8 @@
     state.lastReward = {
       gained, load: w.load, exerciseCount: w.exerciseCount, xpParts: xpBreakdown(w.load,w.exerciseCount), oldLevel, newLevel, newRank: ranks[stage()],
       sessions: completedSessions(),
-      statGains: statScore ? statScore.points : null
+      statGains: statScore ? statScore.points : null,
+      statVersion: statScore ? statScore.version : null
     };
     save();
     state.view = "reward";
