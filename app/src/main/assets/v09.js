@@ -63,7 +63,7 @@
         '<div class="v9-stage-topline"><span class="v9-stage-ribbon">ЭТАП '+shown+' · '+chapter.name+'</span></div>'+ 
         '<div class="v9-hero-level"><b>'+(future?'ЭТАП '+shown:'УР. '+lvl)+'</b><span>'+(future?'Уровень '+chapter.range:'XP '+state.xp+' / '+nextXp())+'</span>'+bar(future?0:pct())+
           (future?'<small class="v10-current-lvl">Твой уровень: '+lvl+'</small>':'')+'</div>'+
-        '<div class="v9-hero-stats"><div class="v10-stat-caption">'+(preview?'ПРИМЕР ПОКАЗАТЕЛЕЙ ЭТАПА '+shown:'ТВОИ ИГРОВЫЕ ПОКАЗАТЕЛИ')+'</div>'+statMarkup(shownStats)+'</div>'+ 
+        '<div class="v9-hero-stats"><div class="v10-stat-caption">'+(preview?'ОРИЕНТИР ЭТАПА '+shown:'ТВОИ ИГРОВЫЕ ПОКАЗАТЕЛИ')+'</div>'+statMarkup(shownStats)+'</div>'+ 
         '<div class="v9-landscape-label"><b>'+chapter.name+'</b><span>'+stepNotice+'</span></div>'+ 
         '<div class="v9-action-underlay">'+navTiles()+'</div>'+ 
       '</section>'+ 
@@ -137,8 +137,10 @@
   reward=function(){
     const r=state.lastReward||{gained:0,newLevel:level(),load:0,sessions:0,oldLevel:level()};
     const totals=typeof window.BATYR_GAME_STATS==="function"?window.BATYR_GAME_STATS():strengthAt(level());
-    const points=r.statGains||{};
-    const displayPoint=k=>'+'+Number(points[k]||0).toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1});
+    const points=typeof window.BATYR_NORMALIZE_GAIN==="function"
+      ? window.BATYR_NORMALIZE_GAIN(r.statGains||{},r.statVersion||1)
+      : r.statGains||{};
+    const displayPoint=k=>'+'+Number(points[k]||0).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
     const gainRows=statMarkup(['strength','endurance','resilience','energy'].map(displayPoint));
     return '<div class="v9-reward"><div class="v9-reward-head">Тренировка завершена!</div>'+ 
        '<div class="v9-laurels">❧ <b>+'+r.gained+' XP</b> ❧</div>'+ 
