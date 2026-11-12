@@ -23,6 +23,28 @@
   };
   const clamp=(n,lower,upper)=>Math.min(upper,Math.max(lower,Number(n)||0));
   const round=(n,precision=2)=>Number(n.toFixed(precision));
+  // v1.1 awarded 0–5 skill points per session and could make a newbie
+  // stronger than the fighter preview immediately. v1.6 reduces skill gains
+  // without deleting older workout records.
+  const SKILL_SCALE=.05;
+  const STAGE_TEMPLATES=[
+    [1,1,1,1],   // 1 Novice
+    [3,3,2,2],   // 2 Fighter
+    [5,4,4,3],   // 3 Warrior
+    [7,6,6,5],   // 4 Batyr
+    [10,9,8,7]   // 5 Legend
+  ];
+  const normalizedPoints=(points,version)=>{
+    const coef=Number(version)>=2?1:SKILL_SCALE;
+    return Object.fromEntries(statKeys.map(k=>[k,round(clamp(points&&points[k],0,5)*coef,3)]));
+  };
+  const rankCap=rank=>{
+    const stageNum=Math.max(1,Math.min(5,Math.floor(Number(rank)||1)));
+    if(stageNum===5)return [99,99,99,99];
+    // No current-stage attribute may overtake even one previewed skill
+    // of the NEXT stage. Categories remain independent.
+    return STAGE_TEMPLATES[stageNum].map(n=>n-.1);
+  };
   const detect=name=>{
     const n=String(name||"").toLowerCase().replace(/ё/g,"е");
     if(/планк|статич|изометр|удерж|wall.?sit|вис\b|баланс|равновес|фермерск|farmer.?carry|hold\b/i.test(n))return "stability";
@@ -58,9 +80,9 @@
       totals[3]+=.12; // small game energy progression for consistency
     }
     // Hard daily cap and logarithmic saturation protect against inflated volume.
-    const points=totals.map(n=>round(Math.min(5,5*Math.log2(1+Math.max(0,n))/Math.log2(6))));
+    const points=totals.map(n=>round(Math.min(5,5*Math.log2(1+Math.max(0,n))/Math.log2(6))*SKILL_SCALE,3));
     return {
-      version:1,
+      version:2,
       points:Object.fromEntries(statKeys.map((k,i)=>[k,points[i]])),
       breakdown:Object.fromEntries(Object.entries(breakdown).map(([k,v])=>[k,round(v)])),
       exercises:details
@@ -72,9 +94,11 @@
     for(const entry of Object.values(archive)){
       const p=entry&&entry.statPoints;
       if(!p||typeof p!=="object")continue;
-      for(const key of statKeys)scores[key]+=clamp(p[key],0,5);
+      const corrected=normalizedPoints(p,entry.statVersion||1);
+      for(const key of statKeys)scores[key]+=corrected[key];
     }
-    return Object.fromEntries(statKeys.map(k=>[k,round(scores[k],1)]));
+    const cap=rankCap(level());
+    return Object.fromEntries(statKeys.map((k,i)=>[k,round(Math.min(cap[i],scores[k]),1)]));
   }
   function recentFocus(days=14){
     const current=new Date();
@@ -93,7 +117,8 @@
   window.BATYR_SCORE_WORKOUT=()=>scoreSession(state.ex,(x,i)=>isDone(x,i));
   window.BATYR_GAME_STATS=currentStats;
   window.BATYR_STAT_NAMES=names;
-  window.BATYR_STAT_ENGINE={detect,category,scoreSession,stats,recentFocus};
+  window.BATYR_STAT_ENGINE={detect,category,scoreSession,stats,recentFocus,normalizedPoints,rankCap,STAGE_TEMPLATES};
+  window.BATYR_NORMALIZE_GAIN=normalizedPoints;
 
   function attrRows(values){
     const symbols=["💪","❤️","🛡","⚡"];
@@ -118,7 +143,7 @@
     };
     return '<div class="card v11-card"><div class="caps">ИГРОВЫЕ ХАРАКТЕРИСТИКИ</div>'+
       '<h2>Что ты действительно тренируешь</h2>'+attrRows(values)+
-      '<p class="small">Показатели начисляются за состав выполненной тренировки, а не за общее XP или выбранный ранг.</p></div>'+
+      '<p class="small">Каждое занятие добавляет немного навыков. Уровень ограничивает максимальные показатели: Новичок не может быть сильнее Бойца из предпросмотра. Бег развивает прежде всего выносливость, штанга — силу.</p></div>'+
       '<div class="card v11-card"><div class="caps">ПОСЛЕДНИЕ 14 ДНЕЙ</div><h2>Какие нагрузки преобладают</h2>'+
       kindRows+
       '<div class="v11-suggestion"><b>Чтобы развиваться гармоничнее:</b><p>'+helps[weakest]+'</p></div>'+
