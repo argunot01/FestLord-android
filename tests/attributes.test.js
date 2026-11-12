@@ -89,8 +89,8 @@ state.trainingHistory={
   "2026-10-10":{load:90,statPoints:{strength:4.4,endurance:4.4,resilience:3.1,energy:2.5}}
 };
 const oldScore=stats();
-assert.equal(oldScore.strength,1.2,"old 4.4 strength from one workout becomes 1.2, not 5.4");
-assert.equal(oldScore.endurance,1.2,"old endurance migrated consistently");
+assert.equal(oldScore.strength,1.22,"old 4.4 strength from one workout becomes 1.22, not 5.4");
+assert.equal(oldScore.endurance,1.22,"old endurance migrated consistently");
 assert.ok(oldScore.strength<3 && oldScore.endurance<3,"Novice below Fighter preview");
 assert.ok(oldScore.resilience<2 && oldScore.energy<2,"Novice below Fighter defensive stats");
 assert.equal(ctx.window.BATYR_STAT_ENGINE.normalizedPoints({strength:4.4},1).strength,0.22);
@@ -104,6 +104,11 @@ for(let day=0;day<100;day++)state.trainingHistory["old"+day]={
 const capped=stats();
 assert.ok(capped.strength<3 && capped.endurance<3);
 assert.ok(capped.resilience<2 && capped.energy<2);
+state.highestRank=2; // Unlock next stage; even then the following stage stays stronger.
+const fighterCap=stats();
+assert.ok(fighterCap.strength<5 && fighterCap.endurance<4);
+assert.ok(fighterCap.resilience<4 && fighterCap.energy<3);
+state.highestRank=1;
 state.trainingHistory=oldArchive;
 
 console.log("PASS: strength/cardio/static classification, differentiated gains, history snapshot, no duplicate or single-rep farm.");
