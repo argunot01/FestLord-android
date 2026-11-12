@@ -137,9 +137,10 @@
   reward=function(){
     const r=state.lastReward||{gained:0,newLevel:level(),load:0,sessions:0,oldLevel:level()};
     const totals=typeof window.BATYR_GAME_STATS==="function"?window.BATYR_GAME_STATS():strengthAt(level());
-    const points=typeof window.BATYR_NORMALIZE_GAIN==="function"
-      ? window.BATYR_NORMALIZE_GAIN(r.statGains||{},r.statVersion||1)
-      : r.statGains||{};
+    const points=r.statGainsApplied ||
+      (typeof window.BATYR_NORMALIZE_GAIN==="function"
+        ? window.BATYR_NORMALIZE_GAIN(r.statGains||{},r.statVersion||1)
+        : r.statGains||{});
     const displayPoint=k=>'+'+Number(points[k]||0).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
     const gainRows=statMarkup(['strength','endurance','resilience','energy'].map(displayPoint));
     return '<div class="v9-reward"><div class="v9-reward-head">Тренировка завершена!</div>'+ 
