@@ -144,6 +144,8 @@
     }
 
     const oldLevel = level();
+    const beforeStats = typeof window !== "undefined" && typeof window.BATYR_GAME_STATS === "function"
+      ? window.BATYR_GAME_STATS() : null;
     const gained = xpBreakdown(w.load,w.exerciseCount).earned;
     const statScore = typeof window !== "undefined" && typeof window.BATYR_SCORE_WORKOUT === "function"
       ? window.BATYR_SCORE_WORKOUT() : null;
@@ -158,10 +160,17 @@
     state.finished[date] = true;
     state.xp += gained;
     const newLevel = level();
+    const afterStats = typeof window !== "undefined" && typeof window.BATYR_GAME_STATS === "function"
+      ? window.BATYR_GAME_STATS() : null;
+    const skillKeys = ["strength","endurance","resilience","energy"];
+    const appliedGains = beforeStats && afterStats
+      ? Object.fromEntries(skillKeys.map((key,i)=>[key,Math.max(0,Number(((afterStats[i]||0)-(beforeStats[i]||0)).toFixed(2)))]))
+      : null;
     state.lastReward = {
       gained, load: w.load, exerciseCount: w.exerciseCount, xpParts: xpBreakdown(w.load,w.exerciseCount), oldLevel, newLevel, newRank: ranks[stage()],
       sessions: completedSessions(),
       statGains: statScore ? statScore.points : null,
+      statGainsApplied: appliedGains,
       statVersion: statScore ? statScore.version : null
     };
     save();
