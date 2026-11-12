@@ -98,7 +98,7 @@
       for(const key of statKeys)scores[key]+=corrected[key];
     }
     const cap=rankCap(level());
-    return Object.fromEntries(statKeys.map((k,i)=>[k,round(Math.min(cap[i],scores[k]),1)]));
+    return Object.fromEntries(statKeys.map((k,i)=>[k,round(Math.min(cap[i],scores[k]),2)]));
   }
   function recentFocus(days=14){
     const current=new Date();
