@@ -2,7 +2,17 @@
 
 Android fitness RPG with a Kazakh Batyr launcher icon and steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## v1.4
+## v1.6
+
+### Skill progression fix (1.6)
+
+- Fixed a major balance bug: one complete workout previously awarded up to five full strength/endurance points, so a rank-1 Novice (e.g. Strength 5.4) could appear stronger than a Fighter (Strength 3).
+- Exercise-type skill gains are scaled down to **5% of the old per-workout rate**; rank XP, ranks, music and user workout history are unchanged.
+- Legacy skill records from 1.1–1.5 are normalized at read time using their saved scheme version. **No saved workouts or XP are deleted.** New records contain `statVersion: 2`.
+- All 4 in-game stats are independently capped below the next rank's preview, e.g. Novice caps: Strength 2.9, Endurance 2.9, Resilience 1.9, Energy 1.9; Fighter preview starts at 3, 3, 2, 2.
+- Higher stages still show illustrative reference stats; actual player stats depend on strength/cardio/static exercise history and never jump to an arbitrary template just because a stage unlocked.
+- Earned skill gains are shown to 0.01 precision and rewards report the actual change after rank caps.
+
 - Interactive, image-rich game UI matching the approved mobile layout: bright Kazakh-steppe photographs, yurt, mountains, five character chapters, gold-framed navigation, workout cards, focused exercise, and reward screen.
 - Five separate full-scene progression illustrations cropped from the approved art. The Legend portrait visibly includes its gray wolf. New vivid scene art is in `app/src/main/assets/scenes/`.
 - Restyled interactive hero overview, step-aware workout list and progress, single-exercise session display, and XP reward page. Music library and level qualifications remain in place.
