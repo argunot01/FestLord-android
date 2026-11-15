@@ -1,0 +1,24 @@
+/* Batyr's Way v1.8 animated RPG coaching and clean music repeat icons. */
+.bw18-art{position:relative;border:1px solid #9b784a;border-radius:16px;overflow:hidden;background:#151b22;box-shadow:inset 0 0 14px #aa875020,0 8px 20px #0007;width:100%;max-width:420px;margin:12px auto 9px}
+.bw18-canvas{display:block;width:100%;height:clamp(170px,30vh,246px);object-fit:contain}
+.bw18-art-bottom{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;color:#d7b47d;font-size:10px;font-weight:800;letter-spacing:1px;background:linear-gradient(90deg,#28221c,#141b23)}
+.bw18-art-bottom button{background:#3a3025;border:1px solid #a67c48;color:#ffda91;border-radius:6px;min-width:36px;height:26px;font-size:14px;cursor:pointer}
+.bw18-pulse{display:inline-block;width:6px;height:6px;background:#e3b56d;box-shadow:0 0 8px #ffce74;border-radius:50%;margin-right:5px}
+.bw17-session .bw18-art{margin:8px 0 6px}
+.bw17-session .bw17-session-goal{margin:4px 0 5px}
+.bw17-session h1{margin:8px 0 2px}
+.bw17-session p{margin:6px 0}
+.bw17-quick-modal .bw18-art{max-width:355px;margin:12px auto}
+.bw17-quick-modal .bw18-canvas{height:165px}
+/* Icon-only repeat modes, one tap = repeat one, second tap = repeat whole playlist. */
+.p10-main-controls .p10-repeat-selected,.p10-miniplayer .p10-repeat-selected{color:#ffd174!important;text-shadow:0 0 9px #ffc86b70}
+.p10-mode-text,.p10-help{display:none!important}
+.p10-miniplayer .p10-mini-repeat{min-width:29px;min-height:34px;color:#f7c767;background:#29251f;border:1px solid #77613c;border-radius:9px;font-size:16px;padding:0 2px;cursor:pointer}
+@media(max-height:720px){.bw18-canvas{height:177px}.bw17-session .bw18-art{margin:7px 0 5px}}
+@media(prefers-reduced-motion:reduce){.bw18-pulse{box-shadow:none}}
+
+.bw18-music-header{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}
+.bw18-music-header h2{margin:0}
+.bw18-repeat{background:#2b2a2b;color:#ffce74;border:1px solid #a77b40;border-radius:10px;font-size:22px;min-width:48px;min-height:41px}
+.p10-feature .btn{max-width:100%}
+.bw17-session{padding-bottom:5px}
