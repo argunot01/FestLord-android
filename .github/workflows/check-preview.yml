@@ -1,0 +1,26 @@
+name: Verify live interactive preview
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'preview/BatyrsWay-v1.9-Light.html'
+      - '.github/workflows/check-preview.yml'
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check hosted HTML preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://raw.githack.com/argunot01/FestLord-android/main/preview/BatyrsWay-v1.9-Light.html"
+          for i in 1 2 3 4; do
+            CODE=$(curl --connect-timeout 10 --max-time 45 -L -sS -o /tmp/batyr-preview.html -w '%{http_code}' "$URL" || true)
+            echo "Attempt $i: HTTP $CODE, bytes $(wc -c </tmp/batyr-preview.html 2>/dev/null || echo 0)"
+            if [ "$CODE" = "200" ]; then break; fi
+            sleep 5
+          done
+          [ "$CODE" = "200" ]
+          grep -q "Batyr" /tmp/batyr-preview.html
+          grep -q "data:image/webp;base64" /tmp/batyr-preview.html
+          echo "PUBLIC PREVIEW VERIFIED"
