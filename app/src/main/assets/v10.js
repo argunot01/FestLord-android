@@ -3,7 +3,7 @@
   "use strict";
   const native = typeof NativeMusic !== "undefined" &&
       typeof NativeMusic.listTracks === "function";
-  const modes = ["order", "all", "one"];
+  const modes = ["order", "one", "all"];
   const modeNames = {order:"По порядку",all:"Повтор списка",one:"Повтор трека"};
   let mode = "order";
   try { const saved = localStorage.getItem("batyr-player-mode"); if(modes.includes(saved)) mode=saved; } catch (_) {}
@@ -91,10 +91,11 @@
     return '<div class="p10-miniplayer">'+
       '<button class="p10-minimark" data-action="p10-open" aria-label="Развернуть плеер">♫</button>'+
       '<button class="p10-minititle" data-action="p10-open" aria-label="Открыть плеер"><b>'+safe(t.title)+'</b>'+
-      '<small><span id="p10-mini-elapsed">'+fmt(position)+'</span> / <span id="p10-mini-total">'+fmt(duration)+'</span> · '+modeNames[mode]+'</small></button>'+
+      '<small><span id="p10-mini-elapsed">'+fmt(position)+'</span> / <span id="p10-mini-total">'+fmt(duration)+'</span></small></button>'+
       '<button class="p10-miniaction" data-action="p10-prev" aria-label="Предыдущая">|◀</button>'+
       '<button class="p10-miniaction p10-gold" data-action="p10-toggle" aria-label="Пауза или воспроизвести">'+toggle+'</button>'+
       '<button class="p10-miniaction" data-action="p10-next" aria-label="Следующая">▶|</button>'+
+      '<button class="p10-mini-repeat '+(mode!=="order"?"p10-repeat-selected":"")+'" data-action="p10-mode" aria-label="'+modeNames[mode]+'" title="'+modeNames[mode]+'">'+(mode==="one"?"↻¹":mode==="all"?"↻":"⇥")+'</button>'+
       '<div class="p10-miniprogress"><div id="p10-miniprogress" style="width:'+(duration?Math.min(100,position/duration*100):0)+'%"></div></div></div>';
   }
   function sheetHtml(){
@@ -111,7 +112,7 @@
       '<button class="p10-big-play" data-action="p10-toggle" aria-label="Пауза или воспроизвести">'+(playing?"Ⅱ":"▶")+'</button>'+
       '<button data-action="p10-next" aria-label="Следующая композиция">▶|</button>'+
       '<button data-action="p10-stop" aria-label="Остановить воспроизведение">■</button></div>'+
-      '<div class="p10-mode-text">Режим: '+modeNames[mode]+'</div>'+
+
       '<button class="p10-queue-link" data-action="p10-library">♫ Перейти к списку треков ('+tracks.length+')</button></section>';
   }
   function paintPlayer(){
@@ -189,7 +190,7 @@
     mode=modes[(modes.indexOf(mode)+1)%modes.length];
     try{localStorage.setItem("batyr-player-mode",mode);}catch(_){}
     paintPlayer();
-    info("Режим: "+modeNames[mode]);
+
   }
   function pickerDialog(kind,trackId){
     const track=tracks.find(t=>t.id===trackId);if(!track)return;
@@ -216,16 +217,11 @@
   }
   function musicScreen(){
     return '<div class="title">♫ Моя музыка</div>'+
-      '<div class="card p10-feature"><h2>Музыка для твоего пути</h2><p>Сохраняй мелодии внутри приложения и слушай их офлайн во время тренировки.</p>'+
+      '<div class="card p10-feature"><div class="bw18-music-header"><h2>Мои треки</h2><button class="bw18-repeat" data-action="p10-mode" title="'+modeNames[mode]+'" aria-label="'+modeNames[mode]+'">'+(mode==="one"?"↻¹":mode==="all"?"↻":"⇥")+'</button></div>'+
       '<button class="btn" data-action="p10-add">＋ Добавить музыку</button>'+
       (!native?'<input id="p10-file" type="file" accept="audio/*" hidden>':'')+
-      '<p id="p10Status" class="p10-status">Новые треки сверху. Нажми на название в мини-плеере, чтобы открыть перемотку.</p></div>'+
-      '<div class="card"><div class="p10-list-head"><h2>Мои треки</h2><span>♫</span></div><div id="p10List"></div></div>'+
-      '<div class="card p10-help"><h2>Режимы воспроизведения</h2>'+
-      '<p>⇥ По порядку — следующий трек, остановка после последнего.</p>'+
-      '<p>↻ Повтор списка — после последнего снова первый.</p>'+
-      '<p>↻¹ Повтор одного — текущая песня играет снова.</p>'+
-      '<button data-action="p10-mode" class="btn secondary">Режим: '+modeNames[mode]+'</button></div>';
+      '<p id="p10Status" class="p10-status"></p></div>'+
+      '<div class="card"><div class="p10-list-head"><h2>Плейлист</h2><span>♫</span></div><div id="p10List"></div></div>';
   }
   music=musicScreen;
   const oldRender=render;
