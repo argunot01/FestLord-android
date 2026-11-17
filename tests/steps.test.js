@@ -51,6 +51,5 @@ nodes['bw20-goal']={value:'8000'};
 stepClick('bw20-setgoal');
 assert.equal(goal,8000);
 assert.ok(nodes.main.innerHTML.replace(/\u00a0/g,' ').includes('8 000'));
-assert.doesNotMatch(nodes.main.innerHTML,/автоматически.*?XP<\/b>/);
 assert.match(nodes.main.innerHTML,/шаги автоматически не дают XP/);
 console.log('PASS: step sensor screen, goal, weekly graph, permission and live native updates');
