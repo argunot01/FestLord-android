@@ -7,8 +7,8 @@ Android fitness RPG with a Kazakh Batyr launcher icon and steppe-inspired design
 ### Native Android step counter (2.0)
 
 - New **Шаги** tab and hero card with phone's TYPE_STEP_COUNTER sensor, daily 7,000-step default goal (editable 500–30,000), 7-day on-device history and daily completion percentage.
-- Android 10+ runtime `ACTIVITY_RECOGNITION` permission; app works without sensor, but displays 'unsupported' instead of fictitious steps. No GPS or account required.
-- Step totals persist in app-private preferences; first measurement is the baseline, never credits steps walked before the first activation. Reboot resets the sensor baseline.
+- Uses Android `TYPE_STEP_COUNTER` with Android 10+ `ACTIVITY_RECOGNITION` runtime permission. When dedicated hardware is absent (e.g. inexpensive phones with only accelerometer), uses a three-peak cadence-gated **approximate accelerometer** count while the app is open. If neither sensor is available, displays 'unsupported'. No GPS or account required.
+- Step totals persist in app-private preferences. Dedicated sensor starts at first activation (no history backfill); reboot resets its baseline. Accelerometer fallback requires 3 consecutive regular motion peaks, counts from when the app is opened and may miscount under shaking or atypical gait.
 - Current v2.0 uses a **foreground Activity sensor listener only** (register on resume, unregister on pause). Some phones may report cumulative steps after reopening within the same day, but continuous/background 24/7 tracking is not guaranteed. A gap across midnight is deliberately not allocated to either day rather than falsifying daily data.
 - Steps are not automatically converted into workout XP to avoid counting the same walk twice. A future Health Connect or foreground service integration is needed for comprehensive background tracking.
 
