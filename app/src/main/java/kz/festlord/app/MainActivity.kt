@@ -25,6 +25,7 @@ import java.util.Locale
 class MainActivity : Activity() {
     private lateinit var browser: WebView
     private lateinit var musicStore: NativeMusicStore
+    private lateinit var stepTracker: BatyrStepTracker
     private var chooser: ValueCallback<Array<Uri>>? = null
     private val fileRequestCode = 1068
 
@@ -39,6 +40,16 @@ class MainActivity : Activity() {
                 }
             }
         }
+        stepTracker = BatyrStepTracker(this) { event ->
+            runOnUiThread {
+                if (::browser.isInitialized && browser.url == "file:///android_asset/index.html") {
+                    browser.evaluateJavascript(
+                        "window.BatyrStepsApp && window.BatyrStepsApp.onNativeEvent(" +
+                            JSONObject.quote(event) + ")", null
+                    )
+                }
+            }
+        }
         window.statusBarColor = Color.rgb(13, 17, 23)
         window.navigationBarColor = Color.rgb(13, 17, 23)
 
@@ -46,6 +57,7 @@ class MainActivity : Activity() {
             setBackgroundColor(Color.rgb(8, 11, 17))
             settings.javaScriptEnabled = true
             addJavascriptInterface(musicStore, "NativeMusic")
+            addJavascriptInterface(stepTracker, "NativeSteps")
             settings.domStorageEnabled = true
             settings.allowFileAccess = true
             settings.allowContentAccess = true
@@ -92,6 +104,25 @@ class MainActivity : Activity() {
         }
         setContentView(browser)
         browser.loadUrl("file:///android_asset/index.html")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::stepTracker.isInitialized) stepTracker.resume()
+    }
+
+    override fun onPause() {
+        if (::stepTracker.isInitialized) stepTracker.pause()
+        super.onPause()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == BatyrStepTracker.PERMISSION_REQUEST_CODE) {
+            stepTracker.onPermissionResult()
+        }
     }
 
     private fun nativeDataJson(): String {
@@ -157,6 +188,7 @@ class MainActivity : Activity() {
         chooser?.onReceiveValue(null)
         chooser = null
         musicStore.release()
+        stepTracker.pause()
         browser.loadUrl("about:blank")
         browser.destroy()
         super.onDestroy()
