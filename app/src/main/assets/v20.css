@@ -1,0 +1,44 @@
+/* Batyr's Way 2.0 — native step counter: gold and twilight steppe. */
+.nav button{font-size:10px;min-width:0;letter-spacing:-.25px}
+.nav button i{font-size:19px}
+.bw20-short{position:relative;display:flex;align-items:center;gap:11px;border:1px solid #ae8245;border-radius:13px;background:linear-gradient(135deg,#3b3020,#171d24);padding:13px 12px 18px;margin:10px 0 13px;cursor:pointer;box-shadow:0 7px 21px #0006;overflow:hidden}
+.bw20-mini-icon{font-size:26px;color:#f7d68d;text-shadow:0 2px 9px #c18a34aa}
+.bw20-mini-content{flex:1;display:flex;flex-direction:column;gap:2px;color:#f6dba4;font-size:12px}
+.bw20-mini-content b{font-size:11px;letter-spacing:.6px;color:#e7e2d6}
+.bw20-mini-content strong{font-size:21px;color:#ffe5ac}
+.bw20-mini-pct{font-size:13px;color:#e9c78e;font-weight:700}
+.bw20-mini-pct b{font-size:24px;margin-left:4px}
+.bw20-mini-bar{position:absolute;bottom:0;height:4px;left:0;right:0;background:#585348}
+.bw20-mini-bar div{height:100%;background:linear-gradient(90deg,#b47c32,#ffe3a1)}
+.bw20-head{padding:14px 5px 14px;display:flex;justify-content:space-between;align-items:center}
+.bw20-head span{font-size:10px;color:#dab36d;letter-spacing:1.3px;font-weight:800}
+.bw20-head h1{font-size:24px;color:#ffdb97;margin:3px 0 0;font-weight:900}
+.bw20-head>b{color:#d3b984;font-size:11px;letter-spacing:1.5px}
+.bw20-hero{position:relative;border:1px solid #b98b4a;background:linear-gradient(140deg,#302716,#151c25 70%);border-radius:18px;padding:24px 19px;overflow:hidden;box-shadow:0 12px 31px #0008;min-height:240px}
+.bw20-hero-bg{position:absolute;inset:0;background:linear-gradient(90deg,#09121b80,#171715aa),url('scenes/warrior.webp') center 33%/cover;opacity:.18}
+.bw20-today,.bw20-big,.bw20-hero p,.bw20-progress,.bw20-today-bottom{position:relative}
+.bw20-today{font-size:11px;color:#e5ba74;letter-spacing:2px;font-weight:900}
+.bw20-big{font-size:59px;line-height:1.2;letter-spacing:-1px;color:#ffe6af;font-weight:900;text-shadow:0 3px 12px #000}
+.bw20-hero p{margin:6px 0 17px;font-size:15px;color:#dbd2c2}
+.bw20-progress{height:13px;background:#34373d;border:1px solid #716349;border-radius:25px;overflow:hidden}
+.bw20-progress>div{background:linear-gradient(90deg,#b57e34,#ffdc83);height:100%;border-radius:25px;box-shadow:0 0 15px #ffb849}
+.bw20-today-bottom{display:flex;justify-content:space-between;margin-top:12px;font-size:12px;color:#d3c9b7}
+.bw20-today-bottom b{color:#ffe2a1}
+.bw20-card{border-color:#786346!important;background:linear-gradient(135deg,#242627,#161c26)!important}
+.bw20-card h2{font-size:17px;color:#f2dfbd;margin:5px 0 9px}
+.bw20-card p{font-size:12px;color:#c9c6c0;line-height:1.6}
+.bw20-goalrow{display:flex;align-items:flex-start;gap:10px}
+.bw20-goalrow input{flex:1;min-width:0;font-size:19px;margin-top:0}
+.bw20-goalrow button{width:auto;flex:0 0 auto}
+.bw20-error{min-height:14px;color:#e6b390}
+.bw20-rows-title{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bw20-rows-title>span{color:#eccb88;font-size:11px}
+.bw20-chart{display:flex;height:160px;justify-content:space-around;gap:7px;padding:9px 0 0}
+.bw20-day{display:flex;flex:1;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.bw20-day b{font-size:10px;color:#e8d2a9}
+.bw20-day small{font-size:11px;color:#c2bbaf}
+.bw20-barholder{height:110px;width:100%;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(transparent,#cfa14b0f);border-bottom:1px solid #715c3f;border-radius:4px 4px 0 0}
+.bw20-barholder>div{width:75%;background:linear-gradient(180deg,#c5a275,#765b43);border-radius:6px 6px 0 0;min-height:3px}
+.bw20-barholder>div.reached{background:linear-gradient(180deg,#ffe1a0,#b68539)}
+.bw20-disclaimer{border-top:1px solid #64563f;padding-top:14px;margin-top:17px!important}
+@media(max-width:350px){.nav button{font-size:9px}.nav button i{font-size:17px}.bw20-big{font-size:49px}.bw20-hero{padding:19px 13px}}
