@@ -26,11 +26,14 @@
   const percent=()=>Math.min(100,Math.round((Number(snapshot.today)||0)/Math.max(1,Number(snapshot.goal)||goalDefault)*100));
   function currentNote(){
     if(!native)return 'Датчик шагов доступен только в Android-приложении, не в HTML-превью.';
-    if(!snapshot.supported)return 'На этом телефоне нет системного датчика шагов. Придумывать цифры мы не будем.';
+    if(!snapshot.supported)return 'На этом телефоне недоступны датчики движения для подсчёта шагов. Цифры не будут выдуманы.';
     if(!snapshot.granted)return 'Разреши приложению считывать физическую активность, чтобы начать подсчёт.';
-    if(!snapshot.started)return 'Разрешение получено. Дождись первого показания датчика и пройди несколько шагов.';
+    if(!snapshot.started)return 'Шагомер включён. Пройди несколько шагов с телефоном в кармане, чтобы начался подсчёт.';
+    const estimate=snapshot.source==='accelerometer';
     return snapshot.active
-      ?'Шаги считываются с датчика телефона. Можно носить телефон в кармане.'
+      ?(estimate
+        ?'На этом телефоне шаги приблизительно определяются по акселерометру. Точность зависит от положения телефона и темпа ходьбы.'
+        :'Шаги считываются с системного шагомера телефона.')
       :'Сейчас приложение не получает новые показания. Открой его, чтобы возобновить считывание.';
   }
   function miniCard(){
@@ -57,7 +60,7 @@
     const total=snapshot.week.reduce((sum,d)=>sum+(Number(d.steps)||0),0);
     return '<div class="bw20-head"><div><span>ПУТЬ БАТЫРА</span><h1>👣 Мой шагомер</h1></div><b>ШАГИ</b></div>'+
       '<section class="bw20-hero"><div class="bw20-hero-bg"></div>'+
-      '<div class="bw20-today">СЕГОДНЯ</div><div class="bw20-big">'+count(snapshot.today)+'</div>'+
+      '<div class="bw20-today">СЕГОДНЯ'+(snapshot.approximate?' · ПРИБЛИЗИТЕЛЬНО':'')+'</div><div class="bw20-big">'+count(snapshot.today)+'</div>'+
       '<p>из '+count(snapshot.goal)+' шагов</p>'+
       '<div class="bw20-progress"><div style="width:'+percent()+'%"></div></div>'+
       '<div class="bw20-today-bottom"><span>Выполнено <b>'+percent()+'%</b></span><span>Осталось <b>'+count(Math.max(0,snapshot.goal-snapshot.today))+'</b></span></div>'+
