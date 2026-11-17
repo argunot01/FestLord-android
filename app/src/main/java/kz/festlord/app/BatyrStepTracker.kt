@@ -32,11 +32,23 @@ class BatyrStepTracker(
     }
 
     private val manager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private val sensor = manager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+    private val hardwareStepCounter = manager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+    private val accelerometer = if (hardwareStepCounter == null)
+        manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) else null
+    private val sensor = hardwareStepCounter ?: accelerometer
+    private val source = when {
+        hardwareStepCounter != null -> "sensor"
+        accelerometer != null -> "accelerometer"
+        else -> "none"
+    }
+    private var gravity = 9.81f
+    private var peakArmed = true
+    private var lastPeakNs = 0L
+    private var cadence = 0
     private val prefs = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     private var listening = false
 
-    private fun granted(): Boolean = Build.VERSION.SDK_INT < 29 ||
+    private fun granted(): Boolean = hardwareStepCounter == null || Build.VERSION.SDK_INT < 29 ||
         activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
 
     private fun day(): String = LocalDate.now().toString()
@@ -69,6 +81,8 @@ class BatyrStepTracker(
         }
         return JSONObject()
             .put("supported", sensor != null)
+            .put("source", source)
+            .put("approximate", source == "accelerometer")
             .put("granted", granted())
             .put("active", listening)
             .put("today", data.optInt(today, 0))
@@ -76,7 +90,7 @@ class BatyrStepTracker(
             .put("week", week)
             .put("lastUpdated", prefs.getLong("updatedAt", 0L))
             .put("started", prefs.getBoolean("started", false))
-            .put("note", "Шаги считаются после включения шагомера. Полный учёт в фоне требует отдельного режима.")
+            .put("note", "Шаги считаются после включения шагомера. На некоторых телефонах число шагов оценивается по акселерометру. Полный учёт в фоне требует отдельного режима.")
             .toString()
     }
 
@@ -109,7 +123,7 @@ class BatyrStepTracker(
     fun resume() {
         if (listening || sensor == null || !granted()) return
         listening = try {
-            manager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+            manager.registerListener(this, sensor, if (hardwareStepCounter == null) SensorManager.SENSOR_DELAY_GAME else SensorManager.SENSOR_DELAY_NORMAL)
         } catch (_: SecurityException) { false }
         notifyJs(if (listening) "ready" else "unsupported")
     }
@@ -121,15 +135,43 @@ class BatyrStepTracker(
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) { }
 
+    /**
+     * Estimate walking cadence from accelerometer peaks if hardware lacks a
+     * step counter. Ignore isolated movements, require 3 rhythmic peaks.
+     */
+    private fun processAcceleration(event: SensorEvent): Long? {
+        if (event.values.size < 3) return null
+        val x=event.values[0]; val y=event.values[1]; val z=event.values[2]
+        val magnitude=kotlin.math.sqrt(x*x+y*y+z*z)
+        gravity=0.88f*gravity+0.12f*magnitude
+        val pulse=magnitude-gravity
+        if(pulse < 0.30f) peakArmed=true
+        if(!peakArmed || pulse < 1.20f) return null
+        peakArmed=false
+        val currentNs=event.timestamp
+        val spacing=(currentNs-lastPeakNs)/1_000_000L
+        cadence=if(lastPeakNs!=0L && spacing in 300L..1400L)
+            (cadence+1).coerceAtMost(30) else 1
+        lastPeakNs=currentNs
+        if(cadence<3)return null
+        val stepIncrement=if(cadence==3) 3L else 1L
+        val count=prefs.getLong("accelerometerSteps",0L)+stepIncrement
+        prefs.edit().putLong("accelerometerSteps",count).apply()
+        return count
+    }
+
     override fun onSensorChanged(event: SensorEvent) {
-        if (event.sensor.type != Sensor.TYPE_STEP_COUNTER) return
-        val current = event.values.firstOrNull()?.toLong() ?: return
+        val current = when(event.sensor.type) {
+            Sensor.TYPE_STEP_COUNTER -> event.values.firstOrNull()?.toLong() ?: return
+            Sensor.TYPE_ACCELEROMETER -> processAcceleration(event) ?: return
+            else -> return
+        }
         if (current < 0) return
         val key = day()
         val lastDay = prefs.getString("lastDay", null)
         val lastRaw = prefs.getLong("lastRaw", -1L)
         val data = history()
-        val sameDay = lastDay == key
+        val sameDay = lastDay == key && prefs.getString("source", null) == source
         val delta = if (lastRaw >= 0L && current >= lastRaw && sameDay)
             (current - lastRaw).coerceAtMost(100000).toInt() else 0
 
@@ -138,6 +180,7 @@ class BatyrStepTracker(
         prefs.edit()
             .putLong("lastRaw", current)
             .putString("lastDay", key)
+            .putString("source", source)
             .putLong("updatedAt", System.currentTimeMillis())
             .putBoolean("started", true)
             .apply()
