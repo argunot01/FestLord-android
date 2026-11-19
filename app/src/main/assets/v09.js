@@ -118,14 +118,11 @@
     const x=state.ex.find(t=>t.id===session?.id);
     if(!x)return '<div class="v9-panel">Упражнение не найдено</div>';
     const total=setsTotal(),done=setsDone(),step=Math.min(total,done+1);
-    const isPush=exIcon(x.name)==='push';
-    const display=isPush?'<img class="v9-action-illustration" src="'+((window.BATYR_EXERCISE_ART)||'scenes/pushup.webp')+'" alt="Пример отжимания">' :
-     '<div class="v9-exercise-icon"><span>'+icon[exIcon(x.name)]+'</span><small>Техника выполнения · следи за самочувствием</small></div>';
     return '<div class="v9-page-head"><button data-action="go-workout">‹</button><h1>Тренировка '+step+' / '+total+'</h1><span>⚔</span></div>'+ 
       '<div class="v9-session-steps">'+[1,2,3].map(i=>'<span class="'+(i<=Math.ceil(step/Math.max(1,total)*3)?'active':'')+'"></span>').join('')+'</div>'+ 
       '<div class="v9-session-main"><p class="v9-session-meta">ПОДХОД '+session.set+' ИЗ '+x.sets+'</p>'+ 
       '<h2>'+esc(x.name)+'</h2><p class="v9-session-target">'+x.amount+' '+(x.kind==='Секунды'?'секунд':'повторений')+'</p>'+ 
-      '<div class="v9-session-figure">'+display+'</div>'+ 
+      '<div class="bw21-session-description">Выполняй упражнение в своём темпе</div>'+ 
       '<div class="v9-session-counter">'+session.counter+' <span>/ '+x.amount+'</span></div>'+ 
       bar((session.counter/x.amount)*100)+ 
       '<div class="v9-counter-actions"><button data-action="plus">＋ 1</button><button data-action="all">Я выполнил цель</button></div>'+ 
