@@ -186,7 +186,7 @@
     const item=LIB.find(x=>x.name===name)||state.ex.find(x=>x.name===name);
     if(!item)return;
     const minutes=Math.max(1,Math.round(item.amount/60));
-    $('modal').innerHTML=`<div class="bw17-modal-shade"><div class="bw17-quick-modal"><h2>${item.icon||'✦'} ${esc(name)}</h2><p>${CATS[category(item)][1]} · лёгкая активность</p>
+    $('modal').innerHTML=`<div class="bw17-modal-shade"><div class="bw17-quick-modal"><h2>${esc(name)}</h2><p>${CATS[category(item)][1]} · лёгкая активность</p>
       <div class="bw17-minutes"><button data-action="bw17-qminutes:-5">−</button><strong id="bw17-qvalue">${minutes}</strong><span>мин</span><button data-action="bw17-qminutes:5">＋</button></div>
       <button class="bw17-action" data-action="bw17-log:${esc(name)}">✓ Записать активность</button><button class="bw17-action outline" data-action="bw17-close">Отмена</button>
     </div></div>`;
@@ -223,7 +223,7 @@
     return `<div class="bw17-session">
       <div class="bw17-session-head"><button data-action="bw17-exit">‹</button><span>${ui.mode==='circuit'?'КРУГ '+round+' / '+ui.round:'ТРЕНИРОВКА'}</span><b>${current}/${total}</b></div>
       <div class="bw17-session-prog"><div style="width:${(at/total*100).toFixed(0)}%"></div></div>
-      <div class="bw17-ex-icon">${icon(x)}</div><h1>${esc(x.name)}</h1>
+      <div class="bw21-session-name"><span>УПРАЖНЕНИЕ</span><h1>${esc(x.name)}</h1></div>
       <div class="bw17-session-goal">${isTime?Math.round(x.amount/60)+' мин':x.amount+' повторений'}</div>
       <p>${CATS[category(x)][0]} Прокачка: ${CATS[category(x)][1]}</p>
       <button data-action="bw17-next" class="bw17-session-go">✓ Выполнено → Далее</button>
