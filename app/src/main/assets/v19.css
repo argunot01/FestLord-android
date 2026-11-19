@@ -1,8 +1,0 @@
-/* Five animated 3D-style hero demonstrations replacing stick-figure canvas. */
-.bw18-art.bw19-shown{border-color:#c69a55;background:radial-gradient(circle,#463b2b,#161c24 75%)}
-.bw19-motion{display:block;width:100%;height:clamp(185px,30vh,247px);object-fit:contain;object-position:center center;background:#121923}
-.bw17-session .bw19-motion{height:clamp(185px,29vh,237px)}
-.bw17-quick-modal .bw19-motion{height:170px}
-.bw19-shown .bw18-art-bottom{background:linear-gradient(90deg,#392b1d,#192029)}
-@media(max-height:720px){.bw19-motion,.bw17-session .bw19-motion{height:185px}}
-@media(prefers-reduced-motion:reduce){.bw19-motion{filter:contrast(.98)}}
