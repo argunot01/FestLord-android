@@ -2,7 +2,13 @@
 
 Android fitness RPG with a Kazakh Batyr launcher icon and steppe-inspired design: a lean beginner grows into a legendary Turkic warrior.
 
-## v2.0
+## v2.1
+
+### Text-only exercise screens (2.1)
+
+- Removed all animated exercise demonstrations and fallback stick figures from standard and circuit training.
+- Both library exercises and manually created exercises show the **exercise title**, amount or duration, sets and completion controls.
+- Kept hero portraits on home screen, saved game progression, saved music and step counter. Deleted bundled demo GIFs and extra animation modules, reducing APK size.
 
 ### Native Android step counter (2.0)
 
