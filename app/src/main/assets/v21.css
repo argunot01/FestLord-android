@@ -1,0 +1,79 @@
+/* Batyr's Way 2.1 — calm, text-only workout sessions. */
+.v9-session-main{
+  padding:24px 12px 30px;
+  text-align:center;
+  border:1px solid #98754c;
+  border-radius:18px;
+  background:linear-gradient(155deg,#30291f,#1a2029 53%,#101821);
+  box-shadow:inset 0 0 35px #b77d2720,0 8px 24px #0005;
+}
+.v9-session-main h2{
+  font-size:clamp(29px,8vw,40px);
+  line-height:1.13;
+  color:#ffdda0;
+  font-weight:900;
+  letter-spacing:.2px;
+  margin:28px 0 10px;
+  text-shadow:0 3px 12px #0008;
+  overflow-wrap:anywhere;
+}
+.v9-session-meta{
+  font-size:13px;
+  letter-spacing:1.3px;
+  color:#e6be72;
+}
+.v9-session-target{
+  font-size:24px;
+  color:#ffecd4;
+  padding:14px 0 8px;
+  margin:0;
+}
+.bw21-session-description{
+  color:#b9b4ad;
+  font-size:13px;
+  padding:8px 0 19px;
+  border-bottom:1px solid #625240;
+}
+.v9-session-counter{
+  font-size:60px;
+  margin:22px 0 8px;
+}
+.v9-session-counter span{font-size:35px}
+.v9-session-controls{
+  margin-top:22px;
+  padding-bottom:16px;
+}
+.bw17-session{gap:18px}
+.bw21-session-name{
+  width:100%;
+  min-height:155px;
+  border:1px solid #a17b4d;
+  border-radius:16px;
+  background:radial-gradient(ellipse at top,#47351e,#1a222c 77%);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  text-align:center;
+}
+.bw21-session-name span{
+  font-size:12px;
+  letter-spacing:2px;
+  font-weight:850;
+  color:#dfb775;
+}
+.bw21-session-name h1{
+  font-size:clamp(26px,7vw,34px);
+  line-height:1.2;
+  color:#ffdea2;
+  margin:0;
+  overflow-wrap:anywhere;
+}
+.bw17-session-goal{font-size:26px}
+@media(max-height:710px){
+  .v9-session-main{padding:13px 10px 20px}
+  .v9-session-main h2{margin-top:12px}
+  .bw21-session-name{min-height:115px}
+}
