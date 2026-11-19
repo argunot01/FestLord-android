@@ -41,10 +41,9 @@ jobs:
           node --check app/src/main/assets/v11.js
           node --check app/src/main/assets/v12.js
           node --check app/src/main/assets/v17.js
-          node --check app/src/main/assets/v18.js
-          node --check app/src/main/assets/v19.js
           node --check app/src/main/assets/v20.js
           node tests/steps.test.js
+          node tests/no-animation.test.js
           node tests/xp-guide.test.js
           node tests/attributes.test.js
           node tests/full_player.test.js
@@ -62,6 +61,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: BatyrsWay-v2.0-steps-APK
+          name: BatyrsWay-v2.1-text-only-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
