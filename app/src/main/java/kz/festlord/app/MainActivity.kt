@@ -98,6 +98,7 @@ class MainActivity : Activity() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     if (url == "file:///android_asset/index.html") {
                         browser.evaluateJavascript("window.importNativeData(${nativeDataJson()})", null)
+                        browser.evaluateJavascript("window.BatyrStepsApp && window.BatyrStepsApp.refresh()", null)
                     }
                 }
             }
@@ -108,11 +109,11 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        if (::stepTracker.isInitialized) stepTracker.resume()
+        if (::stepTracker.isInitialized) stepTracker.ensureBackgroundTracking()
     }
 
     override fun onPause() {
-        if (::stepTracker.isInitialized) stepTracker.pause()
+        // Foreground service continues listening while Activity is paused.
         super.onPause()
     }
 
@@ -188,7 +189,6 @@ class MainActivity : Activity() {
         chooser?.onReceiveValue(null)
         chooser = null
         musicStore.release()
-        stepTracker.pause()
         browser.loadUrl("about:blank")
         browser.destroy()
         super.onDestroy()

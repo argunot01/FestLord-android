@@ -23,7 +23,7 @@ import java.time.LocalDate
  * to the new day. This version has no persistent foreground sensor service.
  */
 class BatyrStepTracker(
-    private val activity: Activity,
+    private val context: Context,
     private val notifyJs: (String) -> Unit
 ) : SensorEventListener {
     companion object {
@@ -31,7 +31,8 @@ class BatyrStepTracker(
         private const val PREFS = "batyr_steps_v1"
     }
 
-    private val manager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val activity: Activity? = context as? Activity
+    private val manager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val hardwareStepCounter = manager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
     private val accelerometer = if (hardwareStepCounter == null)
         manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) else null
@@ -45,13 +46,38 @@ class BatyrStepTracker(
     private var peakArmed = true
     private var lastPeakNs = 0L
     private var cadence = 0
-    private val prefs = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     private var listening = false
 
     private fun granted(): Boolean = hardwareStepCounter == null || Build.VERSION.SDK_INT < 29 ||
-        activity.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
+        context.checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
 
     private fun day(): String = LocalDate.now().toString()
+    fun isSupported() = sensor != null
+    fun hasPermission() = granted()
+    fun isListening() = listening
+
+    private fun startBackground() {
+        if (!granted() || sensor == null) return
+        prefs.edit().putBoolean("trackingEnabled", true).apply()
+        StepTrackingService.start(context)
+        notifyJs("ready")
+    }
+
+    fun ensureBackgroundTracking() {
+        val enabled = prefs.getBoolean("trackingEnabled", prefs.getBoolean("started", false))
+        if (enabled) startBackground()
+    }
+
+    @JavascriptInterface
+    fun stopBackgroundTracking() {
+        val host = activity ?: return
+        host.runOnUiThread {
+            prefs.edit().putBoolean("trackingEnabled", false).apply()
+            context.stopService(android.content.Intent(context, StepTrackingService::class.java))
+            notifyJs("paused")
+        }
+    }
 
     private fun history(): JSONObject =
         try { JSONObject(prefs.getString("history", "{}") ?: "{}") }
@@ -84,23 +110,25 @@ class BatyrStepTracker(
             .put("source", source)
             .put("approximate", source == "accelerometer")
             .put("granted", granted())
-            .put("active", listening)
+            .put("active", StepTrackingService.isRunning)
+            .put("enabled", prefs.getBoolean("trackingEnabled", prefs.getBoolean("started", false)))
             .put("today", data.optInt(today, 0))
             .put("goal", prefs.getInt("goal", 7000))
             .put("week", week)
             .put("lastUpdated", prefs.getLong("updatedAt", 0L))
             .put("started", prefs.getBoolean("started", false))
-            .put("note", "Шаги считаются после включения шагомера. На некоторых телефонах число шагов оценивается по акселерометру. Полный учёт в фоне требует отдельного режима.")
+            .put("note", "Шаги считаются после включения шагомера. На некоторых телефонах число шагов оценивается по акселерометру. Фоновый шагомер продолжает работу при блокировке экрана, пока Android не остановит службу.")
             .toString()
     }
 
     @JavascriptInterface
     fun requestAccess() {
-        activity.runOnUiThread {
+        val host = activity ?: return
+        host.runOnUiThread {
             if (sensor == null) { notifyJs("unsupported"); return@runOnUiThread }
-            if (granted()) { resume(); notifyJs("ready"); return@runOnUiThread }
+            if (granted()) { startBackground(); return@runOnUiThread }
             if (Build.VERSION.SDK_INT >= 29)
-                activity.requestPermissions(
+                host.requestPermissions(
                     arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
                     PERMISSION_REQUEST_CODE
                 )
@@ -116,7 +144,7 @@ class BatyrStepTracker(
     }
 
     fun onPermissionResult() {
-        if (granted()) resume()
+        if (granted()) startBackground()
         notifyJs(if (granted()) "ready" else "denied")
     }
 

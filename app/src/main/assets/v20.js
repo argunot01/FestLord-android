@@ -1,4 +1,4 @@
-/* Batyr's Way 2.0 — Android step sensor dashboard, local history. */
+/* Batyr's Way 2.2 — persistent background step service. */
 (function () {
   "use strict";
   const native = typeof NativeSteps !== "undefined" &&
@@ -14,7 +14,7 @@
     }
     let goal=goalDefault;
     try{goal=Number(localStorage.getItem("batyr-steps-goal-preview"))||goalDefault;}catch(_){}
-    return {supported:false,granted:false,active:false,today:0,goal,week,started:false,lastUpdated:0};
+    return {supported:false,granted:false,active:false,enabled:false,today:0,goal,week,started:false,lastUpdated:0};
   }
   function read() {
     if(!native)return emptySnapshot();
@@ -28,13 +28,13 @@
     if(!native)return 'Датчик шагов доступен только в Android-приложении, не в HTML-превью.';
     if(!snapshot.supported)return 'На этом телефоне недоступны датчики движения для подсчёта шагов. Цифры не будут выдуманы.';
     if(!snapshot.granted)return 'Разреши приложению считывать физическую активность, чтобы начать подсчёт.';
-    if(!snapshot.started)return 'Шагомер включён. Пройди несколько шагов с телефоном в кармане, чтобы начался подсчёт.';
+    if(!snapshot.enabled)return 'Фоновый подсчёт выключен. Нажми «Включить шагомер».';
+    if(!snapshot.active)return 'Фоновая служба не работает. Повтори включение и проверь настройки батареи.';
+    if(!snapshot.started)return 'Шагомер работает в фоне. Пройди несколько шагов с телефоном в кармане.';
     const estimate=snapshot.source==='accelerometer';
-    return snapshot.active
-      ?(estimate
-        ?'На этом телефоне шаги приблизительно определяются по акселерометру. Точность зависит от положения телефона и темпа ходьбы.'
-        :'Шаги считываются с системного шагомера телефона.')
-      :'Сейчас приложение не получает новые показания. Открой его, чтобы возобновить считывание.';
+    return estimate
+      ?'Фоновая служба активна, но счёт по акселерометру приблизительный; при заблокированном экране возможны пропуски.'
+      :'Фоновая служба активна: счёт продолжается с заблокированным экраном и в кармане.';
   }
   function miniCard(){
     return '<section class="bw20-short" data-action="go-steps" role="button" tabindex="0" aria-label="Открыть шагомер">'+
@@ -74,11 +74,15 @@
       '<section class="card bw20-card"><h2>Доступ к шагам</h2><p>'+safe(currentNote())+'</p>'+
       (native&&snapshot.supported&&!snapshot.granted
         ?'<button class="btn" data-action="bw20-permission">Разрешить подсчёт шагов</button>':
-        native&&snapshot.supported?'<button class="btn secondary" data-action="bw20-refresh">Обновить</button>':'')+
-      '<p class="small bw20-disclaimer">Учёт начинается только после включения шагомера. В этой версии подсчёт ведётся при открытом приложении. '+
-      'Системный датчик может передать суммарное изменение после повторного открытия в тот же день; '+
-      'если приложение не было активно во время смены даты, часть шагов может не попасть в статистику. '+
-      'Постоянный надёжный фоновый подсчёт потребует отдельного режима или синхронизации с фитнес-службой.</p></section>'+
+        native&&snapshot.supported&&!snapshot.enabled
+        ?'<button class="btn" data-action="bw20-permission">Включить шагомер в фоне</button>':
+        native&&snapshot.supported
+        ?'<button class="btn secondary" data-action="bw20-stop">Остановить шагомер</button><div style="height:8px"></div><button class="btn secondary" data-action="bw20-refresh">Обновить</button>'
+        :'')+
+      '<p class="small bw20-disclaimer">После разрешения физической активности работает фоновая служба Android с постоянным уведомлением. '+
+      'При блокировке экрана и обычном закрытии приложения счёт продолжается. Принудительная остановка в настройках телефона '+
+      'либо ограничения энергосбережения могут остановить службу. Для Redmi рекомендуется «Без ограничений» в настройках батареи. '+
+      'Данные собираются только после включения. При длинном перерыве вокруг полуночи часть шагов невозможно точно отнести к дню.</p></section>'+
       '<section class="card bw20-card"><h2>❤️ Шаги и развитие героя</h2>'+
       '<p>Ходьба помогает выносливости, но <b>шаги автоматически не дают XP</b> — чтобы одна прогулка не была засчитана дважды вместе с тренировкой.</p>'+
       '<p>Позже сможем подключить награды за реальные цели и объединить с учётом кардио-тренировок.</p></section>';
@@ -126,13 +130,18 @@
     const b=e.target.closest('[data-action]');
     if(!b)return;
     const key=b.dataset.action;
-    if(!['go-steps','bw20-permission','bw20-setgoal','bw20-refresh'].includes(key))return;
+    if(!['go-steps','bw20-permission','bw20-setgoal','bw20-refresh','bw20-stop'].includes(key))return;
     e.preventDefault();e.stopImmediatePropagation();
     if(key==='go-steps'){state.view='steps';render();}
     if(key==='bw20-permission'){if(native)NativeSteps.requestAccess();else paint();}
     if(key==='bw20-refresh')paint();
+    if(key==='bw20-stop' && native)NativeSteps.stopBackgroundTracking();
     if(key==='bw20-setgoal')updateGoal();
   },true);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)paint();});
+  if(typeof setInterval==='function')setInterval(()=>{
+    if(!document.hidden && !(document.activeElement && document.activeElement.id==='bw20-goal'))paint();
+  },5000);
   // Sensor is native; no fake browser step count.
   window.BatyrStepsApp={
     screen:dashboard,

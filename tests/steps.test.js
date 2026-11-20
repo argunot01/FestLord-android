@@ -5,8 +5,8 @@ const nodes={
  main:{innerHTML:''},nav:{innerHTML:''},
  'bw20-mini-host':{innerHTML:''}
 };
-let steps=1500,goal=7000,permission=false;
-const snapshots=()=>JSON.stringify({supported:true,granted:permission,active:permission,started:true,today:steps,goal,
+let steps=1500,goal=7000,permission=false,enabled=true;
+const snapshots=()=>JSON.stringify({supported:true,granted:permission,active:permission,enabled,started:true,today:steps,goal,
  week:[
  {date:'2026-11-11',steps:800},{date:'2026-11-12',steps:1500},
  {date:'2026-11-13',steps:3200},{date:'2026-11-14',steps:4100},
@@ -23,7 +23,8 @@ const ctx={
  render(){},
  NativeSteps:{
   getSnapshot:snapshots,
-  requestAccess(){permission=true;},
+  requestAccess(){permission=true;enabled=true;},
+  stopBackgroundTracking(){enabled=false;},
   setGoal:n=>{goal=n;return true;}
  },
  document:{
@@ -52,4 +53,7 @@ stepClick('bw20-setgoal');
 assert.equal(goal,8000);
 assert.ok(nodes.main.innerHTML.replace(/\u00a0/g,' ').includes('8 000'));
 assert.match(nodes.main.innerHTML,/шаги автоматически не дают XP/);
+assert.match(nodes.main.innerHTML,/Остановить шагомер/);
+stepClick("bw20-stop");
+assert.equal(enabled,false);
 console.log('PASS: step sensor screen, goal, weekly graph, permission and live native updates');
