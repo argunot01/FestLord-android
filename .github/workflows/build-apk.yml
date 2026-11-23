@@ -61,6 +61,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: BatyrsWay-v2.2-background-steps-APK
+          name: BatyrsWay-v2.3-new-logo-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
